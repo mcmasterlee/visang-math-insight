@@ -1,0 +1,12 @@
+Vercel > Project > Settings > Environment Variables 에 아래 이름을 하나씩 등록하세요.
+이 파일에는 실제 키를 입력하지 마세요.
+
+NAVER_CLIENT_ID=
+NAVER_CLIENT_SECRET=
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5-mini
+SUPABASE_URL=
+SUPABASE_SECRET_KEY=
+CRON_SECRET=
+
+실제 값은 Vercel 화면의 Value 칸에만 붙여넣습니다.

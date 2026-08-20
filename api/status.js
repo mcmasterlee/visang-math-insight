@@ -1,0 +1,1 @@
+const {testNaver,testOpenAI,storageMode,getConfig,send}=require('./_common');module.exports=async(req,res)=>{try{const cfg=getConfig();const [naver,openai]=await Promise.all([testNaver(cfg),testOpenAI(cfg)]);send(res,200,{naver,openai,model:cfg.OPENAI_MODEL,storage:storageMode()});}catch(e){send(res,500,{error:e.message})}};

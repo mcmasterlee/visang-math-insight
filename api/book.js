@@ -1,0 +1,1 @@
+const {bookKey,publicRecord,getRecord,send}=require('./_common');module.exports=async(req,res)=>{try{const level=req.query.level||'초등',book=req.query.book||'교과서 개념잡기';send(res,200,publicRecord(level,book,await getRecord(bookKey(level,book))));}catch(e){send(res,500,{error:e.message})}};

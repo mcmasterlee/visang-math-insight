@@ -1,0 +1,7 @@
+{
+  "name":"visang-math-insight-v5",
+  "version":"5.0.0",
+  "private":true,
+  "scripts":{"start":"node server.js"},
+  "engines":{"node":">=20"}
+}
