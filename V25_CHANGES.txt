@@ -1,0 +1,5 @@
+v25 (v21 기준)
+- 부정 후기 표시는 AI가 sentimentStats.evidence에서 negative로 분류한 게시글에만 적용.
+- 부정 표현을 임의 추정하는 fallback 로직 제거.
+- 'Cannot access isNegative before initialization' JavaScript 오류 수정.
+- 전체 후기 제목 앞 빨간 점 + '부정' 배지만 유지.

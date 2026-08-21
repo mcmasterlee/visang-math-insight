@@ -198,9 +198,6 @@
   color:#a66a76;
 }
 .negative-guide .negative-dot{margin-top:0!important}
-.review.is-negative{
-  background:linear-gradient(90deg,rgba(238,113,132,.045),#fff 18%);
-}
 </style>
 </head><body>
 <div class="app"><aside class="side"><div class="brand"><div class="mark"></div>비상 수학 인사이트</div><div class="brand-sub">사람들의 생각을 한눈에</div><div class="level-block"><div class="side-label">학교급</div><div class="tabs" id="tabs"></div></div><div class="side-label">교재 선택</div><div class="books" id="books"></div><div class="side-update"><small>최종 업데이트</small><b id="sideUpdated">-</b><button class="update-btn" id="refreshAllSide">↻ 전체 데이터 업데이트</button></div></aside>
@@ -324,29 +321,13 @@ function renderSentiment(a){
  }
 }
 
-function fallbackNegativePost(p){
- const text=`${p?.title||''} ${p?.description||''}`.toLowerCase();
- const negativeTerms=[
-   '아쉽','불편','어렵다','어려워','어려움','너무 어렵','문제가 적','문제량이 적',
-   '설명이 부족','설명 부족','해설이 부족','해설 부족','오류','오타','헷갈',
-   '부담','별로','추천하지','비추천','실망','단점','아쉬운','아쉬움',
-   '너무 쉽','쉬워서 아쉽','구성이 아쉽','분량이 많','분량 부담','진도가 느',
-   '풀이가 부족','답지가 불편','해설이 불편'
- ];
- const positiveNegations=['어렵지 않','부담 없','부담없이','아쉽지 않'];
- if(positiveNegations.some(x=>text.includes(x)))return false;
- return negativeTerms.some(x=>text.includes(x));
-}
 function isNegativePost(p){
- if(p?.sentimentLabel==='negative')return true;
  const ev=(state.data?.analysis?.sentimentStats?.evidence||[]).find(x=>x.id===p.id);
- if(ev?.label==='negative')return true;
- return fallbackNegativePost(p);
+ return ev?.label==='negative';
 }
 
 function renderReviews(){
- const posts=filteredPosts(),box=$('posts'),pages=Math.max(1,Math.ceil(posts.length/state.pageSize));if(state.page>pages)state.page=1;const start=(state.page-1)*state.pageSize,view=posts.slice(start,start+state.pageSize);box.innerHTML='';$('reviewSubtitle').textContent=state.keyword?`‘${state.keyword}’ 관련 후기 ${posts.length}건`:`전체 ${posts.length}건 · 20개씩 보기`;if(!view.length)box.innerHTML='<div class="loading">현재 조건에 해당하는 후기가 없습니다.</div>';view.forEach(p=>{const a=document.createElement('a');a.className='review'+(isNegative?' is-negative':'');a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';const isNegative=isNegativePost(p);
- a.innerHTML=`<div class="source">${esc(p.source||'웹 후기')}</div><div><h4>${isNegative?'<span class="negative-dot" title="부정 의견으로 판별된 후기 · AI 분류를 우선하고, 분류 데이터가 없으면 명확한 부정 표현을 보조 기준으로 사용"></span>':''}<span>${esc(p.title)}${isNegative?'<span class="negative-label">부정</span>':''}</span></h4><p>${esc(p.description||'')}</p></div><div class="meta">${esc(p.author||'')}<br>${esc(p.postdate||'')}</div>`;box.appendChild(a)});const pg=$('pagination');pg.innerHTML='';for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pagebtn '+(i===state.page?'active':'');b.textContent=i;b.onclick=()=>{state.page=i;renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};pg.appendChild(b)}}
+ const posts=filteredPosts(),box=$('posts'),pages=Math.max(1,Math.ceil(posts.length/state.pageSize));if(state.page>pages)state.page=1;const start=(state.page-1)*state.pageSize,view=posts.slice(start,start+state.pageSize);box.innerHTML='';$('reviewSubtitle').textContent=state.keyword?`‘${state.keyword}’ 관련 후기 ${posts.length}건`:`전체 ${posts.length}건 · 20개씩 보기`;if(!view.length)box.innerHTML='<div class="loading">현재 조건에 해당하는 후기가 없습니다.</div>';view.forEach(p=>{const isNegative=isNegativePost(p);const a=document.createElement('a');a.className='review';a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';a.innerHTML=`<div class="source">${esc(p.source||'웹 후기')}</div><div><h4>${isNegative?'<span class="negative-dot" title="AI 분석에서 부정 의견으로 분류된 후기"></span>':''}<span>${esc(p.title)}${isNegative?'<span class="negative-label">부정</span>':''}</span></h4><p>${esc(p.description||'')}</p></div><div class="meta">${esc(p.author||'')}<br>${esc(p.postdate||'')}</div>`;box.appendChild(a)});const pg=$('pagination');pg.innerHTML='';for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pagebtn '+(i===state.page?'active':'');b.textContent=i;b.onclick=()=>{state.page=i;renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};pg.appendChild(b)}}
 function renderData(d){state.data=d;$('bookTitle').textContent=state.book;$('mentions').textContent=(d.mentions||0).toLocaleString();$('keywordCount').textContent=(d.analysis?.keywords||[]).length;$('heroMentions').textContent=(d.mentions||0).toLocaleString();$('heroKeywordCount').textContent=(d.analysis?.keywords||[]).length;const up=d.lastUpdated?d.lastUpdated.replace('T',' ').slice(0,16):'-';$('sideUpdated').textContent=up;$('topUpdated').textContent=up;$('summary').textContent=d.analysis?.summary||'아직 분석된 전체 후기 요약이 없습니다.';$('topics').innerHTML=(d.analysis?.topics||[]).map(t=>`<span class="topic">${esc(t)}</span>`).join('');renderMap(d.analysis);renderTop10(d.analysis);renderSentiment(d.analysis);renderReviews()}
 async function loadBook(){showError('');try{renderData(await jfetch(`/api/book?level=${encodeURIComponent(state.level)}&book=${encodeURIComponent(state.book)}`))}catch(e){showError(e.message)}}
 async function refreshBook(level,book){return jfetch(`/api/refresh?level=${encodeURIComponent(level)}&book=${encodeURIComponent(book)}`,{method:'POST'})}
