@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="ko">
 <head>
@@ -74,28 +73,43 @@ async function refreshBook(level,book){return jfetch(`/api/refresh?level=${encod
 $('refreshOne').onclick=async()=>{busy(true);error('');try{renderData(await refreshBook(state.level,state.book));await loadStatus()}catch(e){error(e.message)}finally{busy(false)}};
 $('refreshAll').onclick=async()=>{if(!confirm('전체 교재를 순서대로 업데이트합니다. 교재별로 실제 수집 결과가 저장되며 OpenAI 사용량이 발생할 수 있습니다. 계속할까요?'))return;busy(true);error('');const all=[];for(const [level,books]of Object.entries(catalog))for(const book of books)all.push([level,book]);$('progressWrap').style.display='block';let ok=0,fail=0;for(let i=0;i<all.length;i++){const[level,book]=all[i];$('progressText').textContent=`${level} · ${book} 업데이트 중`; $('progressCount').textContent=`${i+1} / ${all.length}`;$('progressBar').style.width=((i/all.length)*100)+'%';try{await refreshBook(level,book);ok++}catch(e){fail++;console.error(level,book,e)}}$('progressBar').style.width='100%';$('progressText').textContent=`완료 · 성공 ${ok} / 실패 ${fail}`;await loadBook();await loadStatus();busy(false);if(fail)error(`${fail}개 교재 업데이트가 실패했습니다. 나머지 교재는 정상적으로 계속 처리했습니다.`)};
 $('centerNode').onclick=()=>{state.keyword=null;renderMind(state.data?.analysis);renderPosts();document.getElementById('postCard').scrollIntoView({behavior:'smooth',block:'start'})};$('clearFilter').onclick=$('centerNode').onclick;$('search').oninput=renderBooks;
-// 은은한 3D 카드 틸트
-for(const card of document.querySelectorAll('.card')){card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.transform=`perspective(900px) rotateX(${(-y*2.4).toFixed(2)}deg) rotateY(${(x*2.4).toFixed(2)}deg) translateY(-1px)`});card.addEventListener('mouseleave',()=>card.style.transform='')}
 (async()=>{catalog=await jfetch('/api/catalog');renderTabs();renderBooks();await loadStatus();await loadBook()})();
 </script>
-</body></html>
 
 <style>
-/* v7 refined motion: content remains readable and clickable */
-.post-card,.book-item,.metric,.panel,.topic,.source-chip{animation:none!important;transform:none}
-.post-card:hover,.book-item:hover{transform:translateY(-2px)!important;transition:transform .22s ease,box-shadow .22s ease}
-.panel,.metric{transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease}
-.panel:hover,.metric:hover{transform:translateY(-3px)}
-.keyword-node{animation:keywordFloat 5.5s ease-in-out infinite;transition:transform .25s ease,box-shadow .25s ease}
-.keyword-node:hover{animation-play-state:paused!important;transform:scale(1.035)!important;z-index:10}
-@keyframes keywordFloat{0%,100%{translate:0 0}50%{translate:0 -5px}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+/* v8: 안정적인 고급 모션 — 정보는 움직이지 않고 공간감만 준다 */
+.post,.book,.topic,.filter-stat{animation:none!important}
+.post,.book,.card,.node{will-change:transform}
+.post{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.post:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(15,23,42,.08)}
+.book{transition:transform .2s ease,background .2s ease}
+.book:hover{transform:translateX(2px)}
+.card{transition:box-shadow .32s ease,border-color .32s ease}
+.card:hover{transform:none!important;box-shadow:0 24px 60px rgba(15,23,42,.10)}
+.node{animation:nodeFloat 6.2s ease-in-out infinite!important;transition:transform .22s ease,box-shadow .22s ease!important}
+.node:hover,.node:focus-visible{animation-play-state:paused!important;transform:translate(-50%,-50%) scale(1.045)!important;z-index:30;box-shadow:0 16px 38px rgba(67,56,202,.22)}
+@keyframes nodeFloat{0%,100%{margin-top:0}50%{margin-top:-5px}}
+/* 화면 배경 레이어만 아주 천천히 움직여 '페이지가 아니라 화면이 움직이는' 공간감 */
+body::before{content:'';position:fixed;inset:-8vh -6vw;pointer-events:none;z-index:-1;background:radial-gradient(circle at 78% 18%,rgba(99,102,241,.10),transparent 32%),radial-gradient(circle at 22% 72%,rgba(14,165,233,.08),transparent 34%);transform:translate3d(0,var(--scene-shift,0px),0);transition:transform .12s linear}
+.reveal-once{opacity:0;transform:translateY(24px) scale(.992)}
+.reveal-once.revealed{opacity:1;transform:none;transition:opacity .62s cubic-bezier(.2,.8,.2,1),transform .62s cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){.node{animation:none!important}.reveal-once{opacity:1;transform:none}body::before{transform:none}}
 </style>
 <script>
-/* v7 scroll reveal: the viewport feels layered without moving readable lists */
-(()=>{const els=[...document.querySelectorAll('.panel,.metric,.section-head')];
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.animate(
-[{opacity:.72,transform:'translateY(22px) scale(.992)'},{opacity:1,transform:'translateY(0) scale(1)'}],
-{duration:560,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'});io.unobserve(e.target)}}),{threshold:.12});
-els.forEach(el=>io.observe(el));})();
+(()=>{
+  // 읽는 목록은 고정. 섹션이 처음 화면에 들어올 때만 한 번 등장한다.
+  const targets=[...document.querySelectorAll('.card')];
+  targets.forEach(el=>el.classList.add('reveal-once'));
+  const io=new IntersectionObserver(entries=>entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('revealed');io.unobserve(e.target)}
+  }),{threshold:.10,rootMargin:'0px 0px -5% 0px'});
+  targets.forEach(el=>io.observe(el));
+  let ticking=false;
+  addEventListener('scroll',()=>{if(ticking)return;ticking=true;requestAnimationFrame(()=>{
+    const shift=Math.max(-12,Math.min(12,scrollY*.018));
+    document.documentElement.style.setProperty('--scene-shift',`${shift}px`);ticking=false;
+  })},{passive:true});
+})();
 </script>
+
+</body></html>
