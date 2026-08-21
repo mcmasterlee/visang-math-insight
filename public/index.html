@@ -127,6 +127,79 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:228px minmax(0
 .loading-line{padding:24px;color:#94a1b5;font-size:12px}
 .api-chip b{color:#526782;font-weight:800}
 </style>
+
+<style id="v13-cluster-map">
+.keyword-panel{min-height:610px}
+.keyword-stage{
+  position:relative;
+  height:520px;
+  margin:0 12px 8px;
+  background:
+    radial-gradient(circle at 50% 51%,rgba(94,94,255,.055),transparent 28%),
+    radial-gradient(circle at 38% 38%,rgba(99,207,148,.045),transparent 23%),
+    radial-gradient(circle at 70% 68%,rgba(239,110,174,.045),transparent 22%);
+  border-radius:18px;
+  overflow:hidden
+}
+#clusterMap{position:absolute;inset:0}
+.bubble-center{
+  position:absolute;left:50%;top:51%;transform:translate(-50%,-50%);
+  width:184px;height:184px;border-radius:50%;border:0;cursor:pointer;z-index:20;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  color:#fff;background:radial-gradient(circle at 35% 28%,#8295ff 0,#6474f4 46%,#5b4fe4 100%);
+  box-shadow:0 26px 60px rgba(83,80,214,.24),0 0 0 16px rgba(101,91,245,.055);
+  transition:transform .2s ease,box-shadow .2s ease
+}
+.bubble-center:hover{transform:translate(-50%,-50%) scale(1.018);box-shadow:0 30px 66px rgba(83,80,214,.28),0 0 0 18px rgba(101,91,245,.06)}
+.center-book{font-size:19px;font-weight:950;line-height:1.35;max-width:145px;letter-spacing:-.5px}
+.center-all{margin-top:10px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.18);font-size:10px;font-weight:900}
+
+.cluster{
+  position:absolute;transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:10px;z-index:5
+}
+.cluster.right{flex-direction:row-reverse}
+.cluster.vertical{flex-direction:column}
+.cluster.vertical .subchips{flex-direction:row;max-width:190px;justify-content:center}
+.cluster.vertical.bottom .subchips{order:2}
+.cluster-core{
+  border:0;border-radius:50%;cursor:pointer;
+  width:126px;height:126px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:16px;font-weight:950;letter-spacing:-.35px;color:#fff;
+  box-shadow:0 18px 40px rgba(53,80,125,.14);
+  transition:transform .22s ease,box-shadow .22s ease;
+  animation:clusterFloat 7s ease-in-out infinite
+}
+.cluster-core small{font-size:10px;font-weight:900;opacity:.82;margin-top:5px}
+.cluster:hover .cluster-core,.cluster.active .cluster-core{
+  animation-play-state:paused;transform:scale(1.035);box-shadow:0 22px 48px rgba(53,80,125,.18)
+}
+.cluster.green .cluster-core{background:radial-gradient(circle at 35% 28%,#8ce2b4,#63c895 58%,#4db982)}
+.cluster.blue .cluster-core{background:radial-gradient(circle at 35% 28%,#8fc7ff,#5b93ef 58%,#477ce1)}
+.cluster.orange .cluster-core{background:radial-gradient(circle at 35% 28%,#ffd58d,#f7b85d 58%,#ed9e3d)}
+.cluster.purple .cluster-core{background:radial-gradient(circle at 35% 28%,#c3a9ff,#9b78e7 58%,#805fd5)}
+.cluster.cyan .cluster-core{background:radial-gradient(circle at 35% 28%,#8ddce8,#56bfd1 58%,#3ea9bd)}
+.cluster.pink .cluster-core{background:radial-gradient(circle at 35% 28%,#f6a7d0,#e96eae 58%,#d95799)}
+.subchips{display:flex;flex-direction:column;gap:6px;max-width:126px}
+.subchip{
+  padding:6px 10px;border-radius:999px;font-size:10px;font-weight:900;white-space:nowrap;
+  border:0;background:rgba(255,255,255,.84);box-shadow:0 8px 18px rgba(50,84,134,.05)
+}
+.green .subchip{color:#3c966b;background:#eefaf4}
+.blue .subchip{color:#3975c8;background:#edf5ff}
+.orange .subchip{color:#bd7b25;background:#fff6e8}
+.purple .subchip{color:#7858bd;background:#f4efff}
+.cyan .subchip{color:#318a9c;background:#eef9fb}
+.pink .subchip{color:#bd4f88;background:#fff0f7}
+
+@keyframes clusterFloat{0%,100%{translate:0 0}50%{translate:0 -3px}}
+@media(max-width:1100px){
+  .keyword-stage{height:610px}
+  .cluster-core{width:108px;height:108px;font-size:14px}
+  .center-book{font-size:16px}.bubble-center{width:160px;height:160px}
+  .subchip{font-size:9px;padding:5px 8px}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -172,11 +245,15 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:228px minmax(0
         <div><div class="panel-title">키워드 맵</div><div class="panel-sub">사람들이 많이 언급한 키워드와 관련 표현</div></div>
         <button class="link-btn" id="centerNodeTop">↗ 전체 보기</button>
       </div>
-      <div class="keyword-stage" id="keywordStage"><div class="loading-note" id="keywordLoading">저장된 분석 데이터를 불러오는 중…</div>
-        <button class="bubble-center" id="centerNode">교과서 개념잡기<br>전체 보기</button>
-        <div id="nodes"></div>
-      </div>
-      <div class="keyword-help">◉ 키워드를 클릭하면 해당 표현이 확인된 실제 후기만 아래에서 볼 수 있어요</div>
+      <div class="keyword-stage" id="keywordStage">
+          <button class="bubble-center" id="centerNode">
+            <span class="center-book" id="centerBook">교과서 개념잡기</span>
+            <span class="center-all">전체 보기</span>
+          </button>
+          <div id="clusterMap"></div>
+        </div>
+        <div class="keyword-help">◉ 큰 원을 클릭하면 해당 관점의 후기만, 가운데 교재명을 클릭하면 전체 후기를 볼 수 있어요</div>
+        <div class="keyword-help" style="display:none"></div>
     </article>
 
     <div class="rightcol">
@@ -210,7 +287,7 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:228px minmax(0
 </div>
 
 <script>
-let catalog={},state={level:'초등',book:'교과서 개념잡기',data:null,keyword:null,global:null};
+let catalog={},state={level:'초등',book:'교과서 개념잡기',data:null,keyword:null,clusterPostIds:null,global:null};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 async function jfetch(url,opt={}){
@@ -228,43 +305,61 @@ async function jfetch(url,opt={}){
     }
 function showError(msg=''){const e=$('error');e.style.display=msg?'block':'none';e.textContent=msg}
 function busy(v){const b=$('refreshAllSide');if(b){b.disabled=v;b.textContent=v?'업데이트 중…':'↻ 전체 데이터 업데이트'}}
-function renderTabs(){const box=$('tabs');box.innerHTML='';Object.keys(catalog).forEach(l=>{const b=document.createElement('button');b.textContent=l;b.className=l===state.level?'active':'';b.onclick=()=>{state.level=l;state.book=catalog[l][0];state.keyword=null;renderTabs();renderBooks();loadBook()};box.appendChild(b)})}
-function renderBooks(){const box=$('books');box.innerHTML='';(catalog[state.level]||[]).forEach(book=>{const d=document.createElement('div');d.className='book '+(book===state.book?'active':'');d.textContent=book;d.onclick=()=>{state.book=book;state.keyword=null;renderBooks();loadBook()};box.appendChild(d)})}
-function keywordPositions(n){const pos=[[30,25],[50,17],[72,27],[80,52],[70,76],[48,82],[25,72],[18,48],[35,48],[65,50]];return pos.slice(0,n)}
-function relatedTerms(word){
- const map={
- '개념 설명':['이해하기 쉬워요','설명이 자세해요','개념 정리가 좋아요'],
- '유형 학습':['유형이 다양해요','실전 연습에 좋아요','문제 구성이 좋아요'],
- '내신 대비':['시험 대비 좋아요','학교 시험에 도움','내신 준비'],
- '반복 학습':['반복하기 좋아요','복습에 좋아요','회독용'],
- '복습':['복습하기 좋아요','기억에 오래 남아요','다시 보기 좋아요'],
- '선행':['선행 학습','예습용','미리 공부하기'],
- '숙제 활용':['숙제로 좋아요','과제로 활용','학원 숙제'],
- '난이도':['난이도 적당해요','조금 어려워요','쉬워요'],
- '기초 학습':['기초 다지기','기본기','입문용'],
- '심화':['심화 문제','상위권','고난도'],
- '문제량':['문제가 많아요','충분한 연습','문항 수'],
- '오답 관리':['오답 정리','틀린 문제 복습','오답노트'],
- '연산':['계산 연습','연산 반복','정확도'],
- '실전 대비':['실전 연습','기출 활용','시험 직전'],
- '단기간 완성':['짧게 끝내기','한 달 완성','빠른 학습']
- };
- return map[word]||['실제 후기 언급','반복 언급','사용 경험'];
+function renderTabs(){const box=$('tabs');box.innerHTML='';Object.keys(catalog).forEach(l=>{const b=document.createElement('button');b.textContent=l;b.className=l===state.level?'active':'';b.onclick=()=>{state.level=l;state.book=catalog[l][0];state.keyword=null;state.clusterPostIds=null;renderTabs();renderBooks();loadBook()};box.appendChild(b)})}
+function renderBooks(){const box=$('books');box.innerHTML='';(catalog[state.level]||[]).forEach(book=>{const d=document.createElement('div');d.className='book '+(book===state.book?'active':'');d.textContent=book;d.onclick=()=>{state.book=book;state.keyword=null;state.clusterPostIds=null;renderBooks();loadBook()};box.appendChild(d)})}
+
+const CLUSTER_DEFS=[
+  {name:'교재 구성',cls:'green',pos:[34,24],layout:'right',terms:['개념 설명','유형 학습','문제량','기초 학습'],subs:['개념 정리','문제 구성','체계적','깔끔한']},
+  {name:'학습 효과',cls:'blue',pos:[66,22],layout:'',terms:['내신 대비','실전 대비','반복 학습','복습','선행'],subs:['실력 향상','이해 잘됨','내신 대비','성적 향상']},
+  {name:'추천/만족',cls:'orange',pos:[24,52],layout:'right',terms:['추천 의사','복습','숙제 활용'],subs:['추천해요','만족해요','좋아요','재구매 의사']},
+  {name:'난이도',cls:'purple',pos:[78,52],layout:'',terms:['난이도','심화','기초 학습'],subs:['적당함','쉬움','조금 어려움','단계별']},
+  {name:'학교급',cls:'cyan',pos:[35,78],layout:'vertical bottom',terms:['선행','기초 학습'],subs:['초등','중등','고등']},
+  {name:'교재 특징',cls:'pink',pos:[66,78],layout:'vertical bottom',terms:['유형 학습','개념 설명','실전 대비','오답 관리'],subs:['다양한 유형','친절한 해설','실전 문제','부가 자료']}
+];
+function clusterStats(a){
+  const kws=a?.keywords||[];
+  return CLUSTER_DEFS.map(def=>{
+    const matched=kws.filter(k=>def.terms.includes(k.word));
+    const count=matched.reduce((sum,k)=>sum+(k.count||0),0);
+    const ids=[...new Set(matched.flatMap(k=>k.postIds||[]))];
+    return {...def,count,postIds:ids};
+  });
 }
-function renderMind(a){const loading=$('keywordLoading');if(loading)loading.remove();
- const kws=(a?.keywords||[]).slice(0,8),nodes=$('nodes');nodes.innerHTML='';
- $('centerNode').innerHTML=esc(state.book).replace(/\s+/g,' ')+'<br><small style="font-size:11px;font-weight:800;opacity:.86">전체 보기</small>';
- if(!kws.length){nodes.innerHTML='<div style="position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);color:#8d9bb0;font-size:13px">키워드 데이터가 아직 없습니다.</div>';return}
- const pos=keywordPositions(kws.length);
- kws.forEach((k,i)=>{const b=document.createElement('button');b.className='bubble b'+((i%6)+1)+(state.keyword===k.word?' active':'');const size=120+Math.min(28,k.count*2);b.style.width=size+'px';b.style.height=size+'px';b.style.left=pos[i][0]+'%';b.style.top=pos[i][1]+'%';b.style.animationDelay=(i*.32)+'s';const subs=relatedTerms(k.word).slice(0,3).map(x=>`<span>${esc(x)}</span>`).join('');b.innerHTML=`${esc(k.word)}<small>${k.count}건</small><div class="subtags">${subs}</div>`;b.onclick=()=>{state.keyword=k.word;renderMind(a);renderPosts();document.getElementById('postCard').scrollIntoView({behavior:'smooth',block:'start'})};nodes.appendChild(b)})
+function renderMind(a){
+  const box=$('clusterMap');box.innerHTML='';
+  $('centerBook').textContent=state.book;
+  const clusters=clusterStats(a);
+  const hasAny=clusters.some(c=>c.count>0);
+  if(!hasAny){
+    const note=document.createElement('div');
+    note.style.cssText='position:absolute;left:50%;top:86%;transform:translateX(-50%);font-size:11px;color:#96a3b7';
+    note.textContent='저장된 후기에서 키워드를 분석하면 6개 관점으로 정리됩니다.';
+    box.appendChild(note);
+  }
+  clusters.forEach((c,i)=>{
+    const wrap=document.createElement('div');
+    wrap.className=`cluster ${c.cls} ${c.layout||''}`+(state.keyword===c.name?' active':'');
+    wrap.style.left=c.pos[0]+'%';wrap.style.top=c.pos[1]+'%';
+    const core=document.createElement('button');core.className='cluster-core';
+    core.innerHTML=`${esc(c.name)}<small>${c.count?c.count+'건':'-'}</small>`;
+    core.onclick=()=>{
+      state.keyword=c.name;
+      state.clusterPostIds=c.postIds;
+      renderMind(a);renderPosts();
+      document.getElementById('postCard').scrollIntoView({behavior:'smooth',block:'start'})
+    };
+    const chips=document.createElement('div');chips.className='subchips';
+    c.subs.forEach(t=>{const s=document.createElement('span');s.className='subchip';s.textContent=t;chips.appendChild(s)});
+    wrap.appendChild(core);wrap.appendChild(chips);box.appendChild(wrap);
+  });
 }
 function renderTop10(a){
  const kws=(a?.keywords||[]).slice(0,10),box=$('rankGrid');box.innerHTML='';
  const max=Math.max(1,...kws.map(k=>k.count||0));
  if(!kws.length){box.innerHTML='<div style="padding:24px;color:#91a0b5;font-size:12px">키워드 데이터가 아직 없습니다.</div>';return}
- kws.forEach((k,i)=>{const r=document.createElement('div');r.className='rank';r.innerHTML=`<div class="rank-num">${i+1}</div><div><div class="rank-name">${esc(k.word)}</div><div class="rank-bar"><i style="width:${Math.max(8,(k.count/max)*100)}%"></i></div></div><div class="rank-count">${k.count}</div>`;r.onclick=()=>{state.keyword=k.word;renderMind(a);renderPosts();document.getElementById('postCard').scrollIntoView({behavior:'smooth',block:'start'})};r.style.cursor='pointer';box.appendChild(r)})
+ kws.forEach((k,i)=>{const r=document.createElement('div');r.className='rank';r.innerHTML=`<div class="rank-num">${i+1}</div><div><div class="rank-name">${esc(k.word)}</div><div class="rank-bar"><i style="width:${Math.max(8,(k.count/max)*100)}%"></i></div></div><div class="rank-count">${k.count}</div>`;r.onclick=()=>{state.keyword=k.word;state.clusterPostIds=null;renderMind(a);renderPosts();document.getElementById('postCard').scrollIntoView({behavior:'smooth',block:'start'})};r.style.cursor='pointer';box.appendChild(r)})
 }
-function filteredPosts(){const posts=state.data?.posts||[];if(!state.keyword)return posts;const kw=(state.data?.analysis?.keywords||[]).find(k=>k.word===state.keyword);if(!kw)return[];const ids=new Set(kw.postIds||[]);return posts.filter(p=>ids.has(p.id))}
+function filteredPosts(){{const posts=state.data?.posts||[];if(!state.keyword)return posts;const kw=(state.data?.analysis?.keywords||[]).find(k=>k.word===state.keyword);if(!kw)return[];const ids=new Set(kw.postIds||[]);return posts.filter(p=>ids.has(p.id))}
 function renderPosts(){
  const posts=filteredPosts();const box=$('posts');box.innerHTML='';
  $('postSubtitle').textContent=state.keyword?`‘${state.keyword}’ 관련 실제 후기 ${posts.length}건`:'실제 사용자 의견을 최신순으로 확인해보세요';
@@ -287,7 +382,7 @@ async function refreshBook(level,book){return jfetch(`/api/refresh?level=${encod
 
 $('refreshAll').onclick=async()=>{if(!confirm('전체 교재를 업데이트할까요? OpenAI 사용량이 발생할 수 있습니다.'))return;busy(true);showError('');const all=[];for(const [level,books]of Object.entries(catalog))for(const book of books)all.push([level,book]);$('progressWrap').style.display='block';let ok=0,fail=0;for(let i=0;i<all.length;i++){const[level,book]=all[i];$('progressText').textContent=`${level} · ${book} 업데이트 중`;$('progressCount').textContent=`${i+1} / ${all.length}`;$('progressBar').style.width=((i/all.length)*100)+'%';try{await refreshBook(level,book);ok++}catch(e){fail++}}$('progressBar').style.width='100%';$('progressText').textContent=`완료 · 성공 ${ok} / 실패 ${fail}`;await loadBook();busy(false);if(fail)showError(`${fail}개 교재 업데이트가 실패했습니다.`)};
 $('refreshAllSide').onclick=$('refreshAll').onclick;
-function clearKeyword(){state.keyword=null;renderMind(state.data?.analysis);renderPosts()}
+function clearKeyword(){state.keyword=null;state.clusterPostIds=null;renderMind(state.data?.analysis);renderPosts()}
 $('centerNode').onclick=clearKeyword;$('centerNodeTop').onclick=clearKeyword;$('top10All').onclick=clearKeyword;$('clearFilter').onclick=clearKeyword;
 (async()=>{try{catalog=await jfetch('/api/catalog');renderTabs();renderBooks();await loadBook()}catch(e){showError(e.message)}})();
 </script>
