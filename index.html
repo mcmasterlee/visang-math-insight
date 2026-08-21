@@ -350,16 +350,16 @@ function renderSentiment(a){
  if(st?.total){
    $('sentMeta').textContent=`총 ${st.total}건을 후기별로 분류해 계산 · 원 중앙은 긍정 후기 비율`;
  }else if(pos!==null){
-   $('sentMeta').textContent='저장된 감성 비율 기준 · 다음 전체 업데이트 후 후기별 분류 건수까지 표시됩니다.';
+   $('sentMeta').textContent='현재 화면에 남아 있는 후기의 AI 게시글별 판정만으로 계산됩니다.';
  }else{
    $('sentMeta').textContent='OpenAI 분석 완료 후 후기별 긍정·중립·부정 분류 결과를 표시합니다.';
  }
 }
 
 function isImprovementPost(p){
- if(p?.hasImprovementPoint===true)return true;
  const ev=(state.data?.analysis?.sentimentStats?.evidence||[]).find(x=>x.id===p.id);
- return ev?.hasImprovementPoint===true || ev?.needsReview===true || ev?.label==='negative';
+ const label=p?.sentimentLabel||ev?.label;
+ return label==='negative'||p?.hasImprovementPoint===true||p?.needsReview===true||ev?.hasImprovementPoint===true||ev?.needsReview===true;
 }
 function improvementReason(p){
  if(p?.improvementEvidence)return p.improvementEvidence;
@@ -377,6 +377,8 @@ function renderReviews(){
  const posts=filteredPosts(),box=$('posts'),pages=Math.max(1,Math.ceil(posts.length/state.pageSize));if(state.page>pages)state.page=1;const start=(state.page-1)*state.pageSize,view=posts.slice(start,start+state.pageSize);box.innerHTML='';$('reviewSubtitle').textContent=state.keyword?`‘${state.keyword}’ 관련 후기 ${posts.length}건`:`전체 ${posts.length}건 · 20개씩 보기`;if(!view.length)box.innerHTML='<div class="loading">현재 조건에 해당하는 후기가 없습니다.</div>';view.forEach(p=>{const isImprovement=isImprovementPost(p);const a=document.createElement('a');a.className='review';a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';a.innerHTML=`<div class="source">${esc(p.source||'웹 후기')}</div><div><h4>${isImprovement?`<span class="negative-dot" title="${esc(improvementCategory(p))}: ${esc(improvementReason(p))}"></span>`:''}<span>${esc(p.title)}${isImprovement?`<span class="negative-label">${esc(improvementCategory(p))}</span>`:''}</span></h4><p>${esc(p.description||'')}</p></div><div class="meta">${esc(p.author||'')}<br>${esc(p.postdate||'')}</div>`;box.appendChild(a)});const pg=$('pagination');pg.innerHTML='';for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pagebtn '+(i===state.page?'active':'');b.textContent=i;b.onclick=()=>{state.page=i;renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};pg.appendChild(b)}}
 function renderData(d){state.data=d;
  const improvementTotal=(d.posts||[]).filter(isImprovementPost).length;
+ const cov=$('sentimentCoverage');if(cov)cov.textContent=`${d.analysis?.sentimentStats?.total||0}건 / 현재 후기 ${d.posts?.length||0}건`;
+
  $('improvementCount').textContent=improvementTotal;
  const t=$('improvementToggle');if(t)t.classList.toggle('active',state.improvementOnly);
 $('bookTitle').textContent=state.book;$('mentions').textContent=(d.mentions||0).toLocaleString();$('keywordCount').textContent=(d.analysis?.keywords||[]).length;$('heroMentions').textContent=(d.mentions||0).toLocaleString();$('heroKeywordCount').textContent=(d.analysis?.keywords||[]).length;const up=d.lastUpdated?d.lastUpdated.replace('T',' ').slice(0,16):'-';$('sideUpdated').textContent=up;$('topUpdated').textContent=up;$('summary').textContent=d.analysis?.summary||'아직 분석된 전체 후기 요약이 없습니다.';$('topics').innerHTML=(d.analysis?.topics||[]).map(t=>`<span class="topic">${esc(t)}</span>`).join('');renderMap(d.analysis);renderTop10(d.analysis);renderSentiment(d.analysis);renderReviews()}
