@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ko">
 <head>
@@ -78,3 +79,23 @@ for(const card of document.querySelectorAll('.card')){card.addEventListener('mou
 (async()=>{catalog=await jfetch('/api/catalog');renderTabs();renderBooks();await loadStatus();await loadBook()})();
 </script>
 </body></html>
+
+<style>
+/* v7 refined motion: content remains readable and clickable */
+.post-card,.book-item,.metric,.panel,.topic,.source-chip{animation:none!important;transform:none}
+.post-card:hover,.book-item:hover{transform:translateY(-2px)!important;transition:transform .22s ease,box-shadow .22s ease}
+.panel,.metric{transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease}
+.panel:hover,.metric:hover{transform:translateY(-3px)}
+.keyword-node{animation:keywordFloat 5.5s ease-in-out infinite;transition:transform .25s ease,box-shadow .25s ease}
+.keyword-node:hover{animation-play-state:paused!important;transform:scale(1.035)!important;z-index:10}
+@keyframes keywordFloat{0%,100%{translate:0 0}50%{translate:0 -5px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+</style>
+<script>
+/* v7 scroll reveal: the viewport feels layered without moving readable lists */
+(()=>{const els=[...document.querySelectorAll('.panel,.metric,.section-head')];
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.animate(
+[{opacity:.72,transform:'translateY(22px) scale(.992)'},{opacity:1,transform:'translateY(0) scale(1)'}],
+{duration:560,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'});io.unobserve(e.target)}}),{threshold:.12});
+els.forEach(el=>io.observe(el));})();
+</script>
