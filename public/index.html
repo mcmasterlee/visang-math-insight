@@ -344,9 +344,9 @@
       <div class="donut-wrap"><div class="donut" id="sentDonut" style="--pos:0%;--neu:0%"><div class="donut-label" id="positive">-</div></div></div>
       <div>
         <div class="sent-legend" id="sentLegend">
-          <div class="sent-row2" data-tip="높은 선호도: 실제 사용 후 만족·추천·학습 효과 등 뚜렷한 호평이 확인된 후기"><span class="sent-dot" style="background:#52c99a"></span><span>높은 선호도</span><b id="posCount">-</b></div>
-          <div class="sent-row2" data-tip="중립: 정보 공유나 사용 경험 중심으로 명확한 긍정·부정 평가가 없는 후기"><span class="sent-dot" style="background:#a9b4c5"></span><span>중립</span><b id="neuCount">-</b></div>
-          <div class="sent-row2" data-tip="개선 요구: 실제 사용 중 아쉬움이나 개선되면 좋을 점이 확인된 후기"><span class="sent-dot" style="background:#ee7184"></span><span>개선 요구</span><b id="negCount">-</b></div>
+          <div class="sent-row2" data-tip="사용 후기·추천: 후기·리뷰·추천·사용 경험 관련 표현이 포함된 후기"><span class="sent-dot" style="background:#52c99a"></span><span class="sent-label">사용 후기·추천</span><b class="sent-value" id="posCount">-</b></div>
+          <div class="sent-row2" data-tip="중립: 정보 공유나 사용 경험 중심으로 명확한 긍정·부정 평가가 없는 후기"><span class="sent-dot" style="background:#a9b4c5"></span><span class="sent-label">자료·정답 정보</span><b class="sent-value" id="neuCount">-</b></div>
+          <div class="sent-row2" data-tip="학습·교재 정보: 개념·문제·난이도·학습·교재 구성 관련 표현이 포함된 후기"><span class="sent-dot" style="background:#ee7184"></span><span class="sent-label">학습·교재 정보</span><b class="sent-value" id="negCount">-</b></div>
         </div>
         <div class="sent-method" id="sentMeta">후기별 사용자 관점 분류 결과를 바탕으로 계산합니다.</div>
         
@@ -521,64 +521,48 @@ function filteredPosts(){
 
 function renderSentiment(analysis){
  const posts=state.data?.posts||[];
- const raw=analysis?.sentiment||analysis?.sentiments||{};
- const hi=Number(raw.positive??raw.highPreference??raw.high_preference??0);
- const mid=Number(raw.neutral??0);
- const improve=Number(raw.negative??raw.improvement??raw.improvementRequest??0);
- const hasAI=(hi+mid+improve)>0;
-
  const donut=$('sentDonut');
  const center=$('sentCenter');
  const rows=document.querySelectorAll('.sent-row2');
  const note=$('sentNote');
 
- if(hasAI){
-   const total=hi+mid+improve;
-   const vals=[hi,mid,improve];
-   const pct=vals.map(v=>Math.round(v/total*100));
-   if(donut)donut.style.background=`conic-gradient(#72c59b 0 ${pct[0]}%,#aab6c8 ${pct[0]}% ${pct[0]+pct[1]}%,#df7580 ${pct[0]+pct[1]}% 100%)`;
-   if(center)center.textContent=pct[0]+'%';
-   rows.forEach((el,i)=>{
-     const value=el.querySelector('.sent-value');
-     if(value)value.textContent=pct[i]+'%';
-   });
-   if(note)note.innerHTML=`AI 사용자 관점 분석 · 총 ${total}건 분류`;
-   return;
- }
-
- // Fallback: never leave the panel blank. Use transparent, deterministic categories
- // from the currently collected title/description text.
- const text=p=>`${p.title||''} ${p.description||''}`.toLowerCase();
+ // 실제 수집된 후기의 제목·설명에 들어 있는 표현만으로 구성 비율을 계산한다.
+ // AI 감성 점수/긍정·부정 추정치는 사용하지 않는다.
  const rules=[
-   {label:'사용 후기·추천', color:'#72c59b', re:/후기|리뷰|추천|사용|써보|풀어보|선택|만족|좋아|괜찮|도움/},
-   {label:'자료·정답 정보', color:'#7ea6e8', re:/정답|답지|해설|pdf|정오표|자료|다운로드|ebook|e-book|부록|qr/},
-   {label:'학습·교재 정보', color:'#aab6c8', re:/개념|문제|연산|난이도|학습|예습|복습|교과|수학|단원|구성/}
+   {label:'사용 후기·추천', color:'#72c59b', terms:['후기','리뷰','추천','사용','써보','풀어보','선택','만족','좋아','괜찮','도움']},
+   {label:'자료·정답 정보', color:'#7ea6e8', terms:['정답','답지','해설','pdf','정오표','자료','다운로드','ebook','e-book','부록','qr']},
+   {label:'학습·교재 정보', color:'#aab6c8', terms:['개념','문제','연산','난이도','학습','예습','복습','교과','수학','단원','구성']}
  ];
  const counts=[0,0,0];
  posts.forEach(p=>{
-   const t=text(p);
-   let idx=rules.findIndex(r=>r.re.test(t));
+   const t=`${p?.title||''} ${p?.description||''}`.toLowerCase();
+   let idx=rules.findIndex(r=>r.terms.some(term=>t.includes(term)));
    if(idx<0)idx=2;
    counts[idx]++;
  });
- const total=Math.max(1,posts.length);
- const pct=counts.map(v=>Math.round(v/total*100));
- // Correct rounding to exactly 100.
- pct[2]=Math.max(0,100-pct[0]-pct[1]);
+ const total=posts.length;
+ const pct=total?counts.map(v=>Math.round(v/total*100)):[0,0,0];
+ if(total) pct[2]=Math.max(0,100-pct[0]-pct[1]);
 
- if(donut)donut.style.background=`conic-gradient(${rules[0].color} 0 ${pct[0]}%,${rules[1].color} ${pct[0]}% ${pct[0]+pct[1]}%,${rules[2].color} ${pct[0]+pct[1]}% 100%)`;
- if(center)center.innerHTML=`<span style="font-size:14px;font-weight:700;color:#74839a">후기 구성</span>`;
+ if(donut){
+   donut.style.background=total
+     ? `conic-gradient(${rules[0].color} 0 ${pct[0]}%,${rules[1].color} ${pct[0]}% ${pct[0]+pct[1]}%,${rules[2].color} ${pct[0]+pct[1]}% 100%)`
+     : '#edf1f6';
+ }
+ if(center)center.innerHTML=total?`<span style="font-size:14px;font-weight:800;color:#1a2f68">${total}건</span>`:'-';
  rows.forEach((el,i)=>{
    const label=el.querySelector('.sent-label');
    const dot=el.querySelector('.sent-dot');
    const value=el.querySelector('.sent-value');
    if(label)label.textContent=rules[i].label;
    if(dot)dot.style.background=rules[i].color;
-   if(value)value.textContent=`${counts[i]}건 · ${pct[i]}%`;
+   if(value)value.textContent=total?`${counts[i]}건 · ${pct[i]}%`:'-';
+   el.dataset.tip=`${rules[i].label}: 현재 수집 후기의 제목·설명에서 관련 표현이 확인된 후기 수`;
  });
- if(note)note.innerHTML=`현재 수집 후기 ${posts.length}건의 <b>제목·설명에 실제 포함된 표현</b>을 기준으로 자동 분류했습니다.<br><span style="font-size:12px">※ 감성 평가가 아니라 후기의 성격을 보여주는 참고 지표입니다.</span>`;
+ if(note)note.innerHTML=total
+   ? `현재 수집 후기 <b>${total}건</b>의 제목·설명에 실제 포함된 표현을 기준으로 집계했습니다.<br><span style="font-size:12px">※ 긍정·부정 감성 평가가 아닌 후기 내용 구성 참고 지표입니다.</span>`
+   : '현재 수집된 후기가 없습니다.';
 }
-
 function renderReviews(){
  try{
    const posts=filteredPosts(),box=$('posts'),pages=Math.max(1,Math.ceil(posts.length/state.pageSize));
