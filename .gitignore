@@ -1,0 +1,12 @@
+# Never commit secrets
+.env
+.env.*
+!.env.example
+API_KEYS.txt
+*API*KEY*.txt
+
+# Local/runtime data
+storage/data.json
+.vercel
+node_modules
+.DS_Store

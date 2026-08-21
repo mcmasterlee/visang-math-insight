@@ -359,7 +359,18 @@ function renderTop10(a){
  if(!kws.length){box.innerHTML='<div style="padding:24px;color:#91a0b5;font-size:12px">키워드 데이터가 아직 없습니다.</div>';return}
  kws.forEach((k,i)=>{const r=document.createElement('div');r.className='rank';r.innerHTML=`<div class="rank-num">${i+1}</div><div><div class="rank-name">${esc(k.word)}</div><div class="rank-bar"><i style="width:${Math.max(8,(k.count/max)*100)}%"></i></div></div><div class="rank-count">${k.count}</div>`;r.onclick=()=>{state.keyword=k.word;state.clusterPostIds=null;renderMind(a);renderPosts();document.getElementById('postCard').scrollIntoView({behavior:'smooth',block:'start'})};r.style.cursor='pointer';box.appendChild(r)})
 }
-function filteredPosts(){{const posts=state.data?.posts||[];if(!state.keyword)return posts;const kw=(state.data?.analysis?.keywords||[]).find(k=>k.word===state.keyword);if(!kw)return[];const ids=new Set(kw.postIds||[]);return posts.filter(p=>ids.has(p.id))}
+function filteredPosts(){
+ const posts=state.data?.posts||[];
+ if(!state.keyword)return posts;
+ if(Array.isArray(state.clusterPostIds)){
+   const ids=new Set(state.clusterPostIds);
+   return posts.filter(p=>ids.has(p.id));
+ }
+ const kw=(state.data?.analysis?.keywords||[]).find(k=>k.word===state.keyword);
+ if(!kw)return [];
+ const ids=new Set(kw.postIds||[]);
+ return posts.filter(p=>ids.has(p.id));
+}
 function renderPosts(){
  const posts=filteredPosts();const box=$('posts');box.innerHTML='';
  $('postSubtitle').textContent=state.keyword?`‘${state.keyword}’ 관련 실제 후기 ${posts.length}건`:'실제 사용자 의견을 최신순으로 확인해보세요';
@@ -373,15 +384,9 @@ function renderData(d){
 }
 async function loadBook(){showError('');try{renderData(await jfetch(`/api/book?level=${encodeURIComponent(state.level)}&book=${encodeURIComponent(state.book)}`))}catch(e){showError(e.message)}}
 async function refreshBook(level,book){return jfetch(`/api/refresh?level=${encodeURIComponent(level)}&book=${encodeURIComponent(book)}`,{method:'POST'})}
-  const total=sums.초등+sums.중등+sums.고등||1;
-  const e=Math.round(sums.초등/total*100),m=Math.round(sums.중등/total*100),h=100-e-m;
-  
-  
- }catch(e){}
-}
 
-$('refreshAll').onclick=async()=>{if(!confirm('전체 교재를 업데이트할까요? OpenAI 사용량이 발생할 수 있습니다.'))return;busy(true);showError('');const all=[];for(const [level,books]of Object.entries(catalog))for(const book of books)all.push([level,book]);$('progressWrap').style.display='block';let ok=0,fail=0;for(let i=0;i<all.length;i++){const[level,book]=all[i];$('progressText').textContent=`${level} · ${book} 업데이트 중`;$('progressCount').textContent=`${i+1} / ${all.length}`;$('progressBar').style.width=((i/all.length)*100)+'%';try{await refreshBook(level,book);ok++}catch(e){fail++}}$('progressBar').style.width='100%';$('progressText').textContent=`완료 · 성공 ${ok} / 실패 ${fail}`;await loadBook();busy(false);if(fail)showError(`${fail}개 교재 업데이트가 실패했습니다.`)};
-$('refreshAllSide').onclick=$('refreshAll').onclick;
+$('refreshAllSide').onclick=async()=>{if(!confirm('전체 교재를 업데이트할까요? OpenAI 사용량이 발생할 수 있습니다.'))return;busy(true);showError('');const all=[];for(const [level,books]of Object.entries(catalog))for(const book of books)all.push([level,book]);$('progressWrap').style.display='block';let ok=0,fail=0;for(let i=0;i<all.length;i++){const[level,book]=all[i];$('progressText').textContent=`${level} · ${book} 업데이트 중`;$('progressCount').textContent=`${i+1} / ${all.length}`;$('progressBar').style.width=((i/all.length)*100)+'%';try{await refreshBook(level,book);ok++}catch(e){fail++}}$('progressBar').style.width='100%';$('progressText').textContent=`완료 · 성공 ${ok} / 실패 ${fail}`;await loadBook();busy(false);if(fail)showError(`${fail}개 교재 업데이트가 실패했습니다.`)};
+
 function clearKeyword(){state.keyword=null;state.clusterPostIds=null;renderMind(state.data?.analysis);renderPosts()}
 $('centerNode').onclick=clearKeyword;$('centerNodeTop').onclick=clearKeyword;$('top10All').onclick=clearKeyword;$('clearFilter').onclick=clearKeyword;
 (async()=>{try{catalog=await jfetch('/api/catalog');renderTabs();renderBooks();await loadBook()}catch(e){showError(e.message)}})();
