@@ -1,8 +1,0 @@
-v33 긴급 복구
-- 실제 오류 원인: 화면에서 userClassOf / userClassKo / userClassEvidence를 호출했지만 함수 정의가 빠져 있었음.
-- 이 때문에 각 후기 카드가 렌더링 중 예외가 나고, 페이지 번호만 남았음.
-- 세 함수를 실제로 구현하고 게시글별 AI evidence와 연결함.
-- 예전 negative 값만으로 '개선 요구'라고 공개 판정하지 않음.
-- hasImprovementPoint=true 또는 새 userClass=improvement_request일 때만 개선 요구로 표시.
-- 높은 선호도/중립/개선 요구는 실제 저장된 게시글별 분류가 있을 때만 집계.
-- JS 문법 검사 + 대표 데이터 5종에 대한 분류 함수 실행 테스트 완료.

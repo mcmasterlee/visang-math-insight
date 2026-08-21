@@ -1,9 +1,0 @@
-v32 — 오류 복구
-- v31 기준 유지
-- sentimentOf / sentimentKo / sentimentEvidenceOf 호환 함수 명시적으로 추가
-- 구버전 코드가 일부 남아도 ReferenceError가 발생하지 않도록 window에 노출
-- 후기 렌더링 전체를 try/catch로 보호
-- 게시글 한 건 오류가 전체 후기 목록을 막지 않음
-- HTML 캐시 방지를 위해 vercel.json에 no-store 헤더 추가
-- 공개 분류는 높은 선호도 / 중립 / 개선 요구 유지
-- 중립 후기에는 목록 배지를 표시하지 않음
