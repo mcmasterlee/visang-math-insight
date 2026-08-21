@@ -14,13 +14,54 @@
 .post-filter{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 12px;background:#f7f8fc;border-radius:12px;font-size:12px}.post-filter strong{color:#5e59d1}.clear{margin-left:auto;border:0;background:#fff;padding:6px 9px;border-radius:8px;cursor:pointer;font-weight:800;color:#59657a}.posts{display:grid;gap:10px}.post{display:block;text-decoration:none;color:inherit;padding:15px 16px;border:1px solid rgba(15,23,42,.065);border-radius:15px;background:rgba(255,255,255,.72);transition:.22s;position:relative}.post:hover{transform:translateY(-3px) scale(1.002);border-color:rgba(111,92,255,.26);box-shadow:0 16px 30px rgba(32,44,76,.08)}.post-title{font-weight:900;font-size:14px;margin-bottom:7px;padding-right:25px}.post-title:after{content:"↗";position:absolute;right:16px;top:14px;color:#7567ff}.meta{display:flex;gap:8px;flex-wrap:wrap;font-size:10px;color:#8791a3}.desc{font-size:12px;color:#59657a;line-height:1.55;margin-top:8px}.empty{padding:35px;text-align:center;color:#7c879a;border:1px dashed #d9deea;border-radius:15px;background:rgba(255,255,255,.45)}.error{display:none;padding:13px 15px;border-radius:13px;background:#fff0f2;color:#a73548;border:1px solid #ffd0d7;margin-bottom:13px;font-size:12px;line-height:1.55}.progress-wrap{display:none;margin-bottom:13px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.8);padding:13px;border-radius:15px;box-shadow:0 10px 28px rgba(26,36,61,.06)}.progress-top{display:flex;justify-content:space-between;font-size:12px;font-weight:800;margin-bottom:8px}.progress{height:9px;border-radius:99px;background:#e9edf5;overflow:hidden}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7567ff,#25b6e8);transition:width .35s ease}.pulse{animation:pulse 1.4s ease-in-out infinite}@keyframes pulse{50%{opacity:.55}}
 @media(max-width:1100px){.shell{grid-template-columns:1fr}.side{position:relative;height:auto}.main{padding:22px}.kpi{grid-column:span 6}.span8,.span4{grid-column:span 12}}@media(max-width:650px){.main{padding:15px}.top{flex-direction:column}.title h1{font-size:27px}.kpi{grid-column:span 12}.status-row{grid-template-columns:1fr}.filter-stats{grid-template-columns:repeat(2,1fr)}.map-stage{height:420px}.actions{width:100%}.btn{flex:1}}
 </style>
+
+<style id="v9-premium-design">
+:root{--bg:#f7faff;--ink:#10254e;--muted:#70809d;--blue:#2587ff;--violet:#6658f5;--cyan:#32c6d7;--green:#57cf9a;--pink:#ef69ad;--orange:#ffb85c;--line:#e6edf8;--shadow:0 18px 55px rgba(37,75,130,.08)}
+body{background:linear-gradient(135deg,#fbfdff 0%,#f5f9ff 55%,#f9fbff 100%);color:var(--ink);font-size:16px}
+.aurora,.mind-svg,.map-stage:before{display:none!important}
+.shell{grid-template-columns:230px minmax(0,1fr)}
+.side{background:rgba(255,255,255,.94);color:var(--ink);border-right:1px solid #e4ebf6;box-shadow:none;padding:30px 18px}
+.logo-mark{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#fff 0 18%,#695cf6 20% 45%,#8c82ff 46%);box-shadow:0 8px 24px rgba(101,92,246,.20);transform:none}
+.brand{font-size:18px}.sub{margin:4px 0 30px 42px;color:#8b99b1;font-size:12px}
+.tabs{gap:5px}.tabs button{background:#f5f8fd;color:#667691;border:0;padding:11px 4px}.tabs button.active{background:#eef2ff;color:#5147d8;box-shadow:none;transform:none}
+.search{background:#f7f9fd;color:#20365d;border:1px solid #e5ebf4;padding:13px}.search::placeholder{color:#9ba8bb}
+.book{font-size:14px;color:#60708c;padding:12px}.book:hover{background:#f5f8ff;color:#285fc0;transform:none}.book.active{background:#edf4ff;color:#176bd3}.book.active:before{background:#2989ff;box-shadow:none}
+.precision{display:none}
+.main{max-width:1600px;padding:44px 46px 70px}
+.top{margin:10px 0 32px;align-items:center}.eyebrow{font-size:12px;letter-spacing:.04em;color:#6559e9;margin-bottom:14px}.badge{background:#eeecff;color:#594ee0;padding:7px 12px}
+.title h1{font-size:46px;line-height:1.18;letter-spacing:-2.4px;margin-bottom:15px;color:#112a59}.title h1 em{font-style:normal;background:linear-gradient(90deg,#168cf8,#6358f4);-webkit-background-clip:text;color:transparent}.title p{font-size:16px;color:#75839b}.title p strong{color:#344d76}
+.btn{font-size:14px;padding:13px 18px;border-radius:12px}.btn.soft{background:#fff}.btn.primary{background:linear-gradient(135deg,#268af7,#6759f5)}
+.status-row{display:none}
+.grid{gap:18px}.card{background:#fff;border:1px solid #e7edf7;border-radius:22px;padding:24px;box-shadow:var(--shadow);overflow:visible}
+.card:after,.kpi:before{display:none}.card:hover{box-shadow:0 20px 60px rgba(37,75,130,.10)!important}
+.kpi{min-height:145px}.kpi .label{font-size:14px;color:#6c7d98}.kpi .value{font-size:42px;color:#102b5a;margin-top:18px}.kpi .hint{font-size:12px;color:#95a2b6}
+.section-title{font-size:20px;letter-spacing:-.4px}.section-note{font-size:13px;color:#8b99ad}.summary{font-size:17px;line-height:1.85;color:#405475;min-height:105px}.topic{font-size:13px;padding:8px 12px}
+.sent-row{font-size:14px;grid-template-columns:58px 1fr 52px}.bar{height:10px}
+.filter-stats{grid-template-columns:repeat(5,1fr)}.filter-stat{padding:15px}.filter-stat b{font-size:24px}.filter-stat span{font-size:12px}
+.mind-shell{padding-top:0}.center-node{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:190px;height:190px;border-radius:50%;padding:24px;background:radial-gradient(circle at 35% 25%,#8d84ff,#6258f4 58%,#5148df);font-size:19px;line-height:1.35;box-shadow:0 25px 60px rgba(89,79,232,.28),0 0 0 18px rgba(101,91,245,.06);z-index:20}
+.center-node:hover,.center-node.active{transform:translate(-50%,-50%) scale(1.02);box-shadow:0 28px 68px rgba(89,79,232,.30),0 0 0 20px rgba(101,91,245,.07)}
+.map-stage{height:600px;border:0;background:radial-gradient(circle at 50% 50%,rgba(102,91,245,.055),transparent 35%);overflow:visible}
+.node{min-width:118px;min-height:72px;padding:15px 18px;border:0;background:#fff;font-size:15px;color:#23426d;box-shadow:0 14px 38px rgba(52,87,140,.12);animation:v9Float 6.5s ease-in-out infinite!important}
+.node:nth-child(5n+1){background:linear-gradient(145deg,#eef7ff,#d9edff)}
+.node:nth-child(5n+2){background:linear-gradient(145deg,#effcf6,#d9f5e7)}
+.node:nth-child(5n+3){background:linear-gradient(145deg,#fff6e8,#ffe8c5)}
+.node:nth-child(5n+4){background:linear-gradient(145deg,#f4efff,#e7ddff)}
+.node:nth-child(5n){background:linear-gradient(145deg,#fff0f7,#ffddeb)}
+.node:hover,.node:focus-visible,.node.active{animation-play-state:paused!important;background:linear-gradient(135deg,#2589ff,#6759f5);color:#fff;transform:translate(-50%,-50%) scale(1.055)!important}
+.node small{font-size:11px}.post-filter{font-size:14px}.post{padding:20px 22px;border-color:#e7edf6;border-radius:16px}.post:hover{transform:translateY(-2px)}.post-title{font-size:16px}.meta{font-size:12px}.desc{font-size:14px;line-height:1.7}
+@keyframes v9Float{0%,100%{margin-top:0}50%{margin-top:-4px}}
+/* 기술적 상태는 화면의 주제가 아니므로 오류/진행 시에만 노출 */
+.progress-wrap,.error{font-size:13px}
+@media(max-width:1100px){.shell{grid-template-columns:1fr}.side{position:relative;height:auto}.main{padding:28px}.title h1{font-size:38px}.map-stage{height:560px}}
+@media(max-width:650px){.main{padding:18px}.title h1{font-size:32px}.map-stage{height:620px}.center-node{width:145px;height:145px;font-size:16px}.node{min-width:98px;font-size:13px}.kpi .value{font-size:36px}}
+</style>
 </head>
 <body>
 <div class="aurora"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div></div>
 <div class="shell">
 <aside class="side">
   <div class="logo"><div class="logo-mark"></div><div class="brand">비상 수학 인사이트</div></div>
-  <p class="sub">Math Textbook VOC Intelligence</p>
+  <p class="sub">사람들의 실제 교재 후기 분석</p>
   <div class="tabs" id="tabs"></div>
   <input class="search" id="search" placeholder="교재명 검색" />
   <div id="books"></div>
@@ -30,24 +71,24 @@
   <div id="error" class="error"></div>
   <div class="progress-wrap" id="progressWrap"><div class="progress-top"><span id="progressText">업데이트 준비 중</span><span id="progressCount">0 / 20</span></div><div class="progress"><i id="progressBar"></i></div></div>
   <header class="top">
-    <div class="title"><div class="eyebrow"><span class="badge" id="levelBadge">초등</span><span>정밀 VOC 모니터링</span></div><h1 id="bookTitle">교과서 개념잡기</h1><p>공개 블로그·카페에서 실제 교재명과 학교급이 확인된 게시물만 집계합니다.</p></div>
+    <div class="title"><div class="eyebrow"><span class="badge" id="levelBadge">초등</span><span>REAL USER REVIEW ANALYSIS</span></div><h1>비상교육 수학 교재,<br><em>사람들은 이렇게 생각하고 있어요</em></h1><p><strong id="bookTitle">교과서 개념잡기</strong>에 대한 실제 후기 데이터를 한눈에 정리했습니다.</p></div>
     <div class="actions"><button class="btn soft" id="refreshOne">이 교재 새로 수집</button><button class="btn primary" id="refreshAll">전체 교재 업데이트</button></div>
   </header>
   <div class="status-row"><div class="status-card"><span class="status-dot" id="naverDot"></span><div class="status-text"><b>네이버 검색 API</b><span id="naverStatus">확인 중…</span></div></div><div class="status-card"><span class="status-dot" id="openaiDot"></span><div class="status-text"><b>OpenAI 분석</b><span id="openaiStatus">확인 중…</span></div></div></div>
   <section class="grid">
-    <article class="card kpi"><div class="label">정밀 필터 통과 누적 언급</div><div class="value" id="mentions">0</div><div class="hint">고유 원문 URL 기준</div></article>
-    <article class="card kpi"><div class="label">오늘 신규</div><div class="value" id="today">0</div><div class="hint">오늘 처음 저장된 글</div></article>
+    <article class="card kpi"><div class="label">수집된 실제 후기</div><div class="value" id="mentions">0</div><div class="hint">중복을 제거한 원문 기준</div></article>
+    <article class="card kpi"><div class="label">새로 확인된 후기</div><div class="value" id="today">0</div><div class="hint">오늘 처음 저장된 글</div></article>
     <article class="card kpi"><div class="label">긍정</div><div class="value" id="positive">-</div><div class="hint">AI 사용 가능 시 분석</div></article>
     <article class="card kpi"><div class="label">마지막 업데이트</div><div class="value" id="lastUpdated" style="font-size:22px">-</div><div class="hint" id="storageMode"></div></article>
 
-    <article class="card span8"><div class="section-head"><div class="section-title">AI 핵심 요약</div><div class="section-note" id="aiState">실제 수집 데이터 기반</div></div><div class="summary" id="summary">아직 수집된 데이터가 없습니다.</div><div class="topics" id="topics"></div></article>
+    <article class="card span8"><div class="section-head"><div class="section-title">사람들의 생각 요약</div><div class="section-note" id="aiState">실제 수집 데이터 기반</div></div><div class="summary" id="summary">아직 수집된 데이터가 없습니다.</div><div class="topics" id="topics"></div></article>
     <article class="card span4"><div class="section-head"><div class="section-title">감성 분석</div><div class="section-note">긍정 · 중립 · 부정</div></div><div class="sentiment"><div class="sent-row pos"><span>긍정</span><div class="bar"><i id="posBar"></i></div><b id="posText">-</b></div><div class="sent-row neu"><span>중립</span><div class="bar"><i id="neuBar"></i></div><b id="neuText">-</b></div><div class="sent-row neg"><span>부정</span><div class="bar"><i id="negBar"></i></div><b id="negText">-</b></div></div></article>
 
-    <article class="card span12"><div class="section-head"><div><div class="section-title">수집 정확도 검사</div><div class="section-note">검색 결과를 교재명 전체 일치 → 학교급 일치 → 광고 제외 순서로 거릅니다.</div></div></div><div class="filter-stats" id="filterStats"></div></article>
+    <article class="card span12" style="display:none"><div class="section-head"><div><div class="section-title">수집 품질</div><div class="section-note">검색 결과를 교재명 전체 일치 → 학교급 일치 → 광고 제외 순서로 거릅니다.</div></div></div><div class="filter-stats" id="filterStats"></div></article>
 
-    <article class="card span12"><div class="section-head"><div><div class="section-title">인터랙티브 주요 키워드 맵</div><div class="section-note">키워드를 클릭하면 해당 표현이 확인된 게시글만 아래에 표시됩니다.</div></div></div><div class="mind-shell"><button class="center-node active" id="centerNode">교과서 개념잡기 · 전체 보기</button><div class="map-stage" id="mapStage"><svg class="mind-svg" id="mindSvg"></svg><div id="nodes"></div></div></div></article>
+    <article class="card span12"><div class="section-head"><div><div class="section-title">사람들이 많이 말한 키워드</div><div class="section-note">키워드를 클릭하면 해당 표현이 확인된 게시글만 아래에 표시됩니다.</div></div></div><div class="mind-shell"><button class="center-node active" id="centerNode">교과서 개념잡기 · 전체 보기</button><div class="map-stage" id="mapStage"><svg class="mind-svg" id="mindSvg"></svg><div id="nodes"></div></div></div></article>
 
-    <article class="card span12" id="postCard"><div class="section-head"><div><div class="section-title">주요 언급 내용</div><div class="section-note">게시글 제목 클릭 시 네이버 검색 페이지가 아닌 실제 원문 URL로 이동합니다.</div></div><div class="section-note" id="postCount"></div></div><div class="post-filter" id="postFilter" style="display:none">현재 필터: <strong id="filterName"></strong><button class="clear" id="clearFilter">전체 보기</button></div><div class="posts" id="posts"></div></article>
+    <article class="card span12" id="postCard"><div class="section-head"><div><div class="section-title">실제 후기</div><div class="section-note">게시글 제목 클릭 시 네이버 검색 페이지가 아닌 실제 원문 URL로 이동합니다.</div></div><div class="section-note" id="postCount"></div></div><div class="post-filter" id="postFilter" style="display:none">현재 필터: <strong id="filterName"></strong><button class="clear" id="clearFilter">전체 보기</button></div><div class="posts" id="posts"></div></article>
   </section>
 </main>
 </div>
