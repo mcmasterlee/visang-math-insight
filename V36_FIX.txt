@@ -1,0 +1,16 @@
+v36 — 사용 인사이트 실제 렌더링 수정
+
+원인:
+- v35에는 renderDetInsights() 함수와 클릭 로직은 있었지만
+  renderData()가 renderDetInsights()를 호출하지 않았음.
+- 따라서 빈 박스만 표시되고 막대/숫자/클릭 기능이 생성되지 않았음.
+
+수정:
+1. renderData()에서 반드시 renderDetInsights() 호출.
+2. 현재 후기 수를 인사이트 카드 하단에 표시.
+3. 3개 그래프 모두 후기 제목+설명에서 즉시 집계.
+4. 막대마다 건수 / 전체 후기 대비 비율 표시.
+5. 각 막대 클릭 시 state.detFilter 설정 → 실제 후기 필터링.
+6. 클릭 가능하다는 것을 알 수 있도록 우측 화살표 및 hover/active 효과 추가.
+7. 중앙 '전체 후기' 클릭 시 인사이트 필터도 초기화.
+8. 정적 검증으로 renderData 호출, click handler, posts.filter 연결을 모두 확인.
