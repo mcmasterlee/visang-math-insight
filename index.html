@@ -90,6 +90,25 @@
   .hero-stats{max-width:520px}
 }
 </style>
+
+<style id="v18-spacing-fix">
+/* 우측 상단 핵심 수치 박스: 높이 축소 + 최종 업데이트와 간격 확대 */
+.hero-row{margin-top:14px!important}
+.hero-stats{align-self:start!important}
+.hero-stat{
+  min-height:78px!important;
+  padding:12px 18px!important;
+}
+.hero-stat b{
+  font-size:26px!important;
+  margin-top:4px!important;
+}
+
+/* 키워드 맵과 전체 후기 인사이트 사이 간격 확대 */
+.insight-card{
+  margin-top:28px!important;
+}
+</style>
 </head><body>
 <div class="app"><aside class="side"><div class="brand"><div class="mark"></div>비상 수학 인사이트</div><div class="brand-sub">사람들의 생각을 한눈에</div><div class="level-block"><div class="side-label">학교급</div><div class="tabs" id="tabs"></div></div><div class="side-label">교재 선택</div><div class="books" id="books"></div><div class="side-update"><small>최종 업데이트</small><b id="sideUpdated">-</b><button class="update-btn" id="refreshAllSide">↻ 전체 데이터 업데이트</button></div></aside>
 <main class="main"><div class="topline"><div class="intro">비상교육 수학 교재에 대한 실제 사용자 의견을 분석했습니다.</div><div class="updated">최종 데이터 업데이트 <b id="topUpdated">-</b></div></div><div class="hero-row">
