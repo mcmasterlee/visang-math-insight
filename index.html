@@ -118,6 +118,15 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:228px minmax(0
   .rightcol{grid-template-columns:1fr}
 }
 </style>
+
+<style id="v12-loading-fix">
+.loading-note{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  font-size:13px;color:#94a1b5;z-index:1;pointer-events:none
+}
+.loading-line{padding:24px;color:#94a1b5;font-size:12px}
+.api-chip b{color:#526782;font-weight:800}
+</style>
 </head>
 <body>
 <div class="app">
@@ -146,7 +155,7 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:228px minmax(0
 
   <div class="topline">
     <div class="top-note">비상교육 수학 교재에 대한 실제 사용자들의 생각을 분석했습니다.</div>
-    <div class="api-chip">API 상태 <b id="apiState">확인 중</b></div>
+    <div class="api-chip">최종 데이터 업데이트 <b id="topUpdated">-</b></div>
   </div>
 
   <header class="hero">
@@ -163,7 +172,7 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:228px minmax(0
         <div><div class="panel-title">키워드 맵</div><div class="panel-sub">사람들이 많이 언급한 키워드와 관련 표현</div></div>
         <button class="link-btn" id="centerNodeTop">↗ 전체 보기</button>
       </div>
-      <div class="keyword-stage" id="keywordStage">
+      <div class="keyword-stage" id="keywordStage"><div class="loading-note" id="keywordLoading">저장된 분석 데이터를 불러오는 중…</div>
         <button class="bubble-center" id="centerNode">교과서 개념잡기<br>전체 보기</button>
         <div id="nodes"></div>
       </div>
@@ -174,16 +183,16 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:228px minmax(0
       <article class="panel summary-panel">
         <div class="panel-head"><div><div class="panel-title">전체 후기 요약</div><div class="panel-sub">선택한 교재 기준</div></div></div>
         <div class="summary-grid">
-          <div class="metric"><div class="micon">▣</div><div class="label">총 후기 수</div><div class="value" id="mentions">0</div><div class="hint">중복 제거 원문</div></div>
+          <div class="metric"><div class="micon">▣</div><div class="label">총 후기 수</div><div class="value" id="mentions">…</div><div class="hint">중복 제거 원문</div></div>
           <div class="metric"><div class="micon">☺</div><div class="label">긍정 비율</div><div class="value" id="positive">-</div><div class="hint">AI 감성 분석</div></div>
-          <div class="metric"><div class="micon">◇</div><div class="label">주요 키워드</div><div class="value" id="keywordCount">0</div><div class="hint">반복 언급 기준</div></div>
-          <div class="metric"><div class="micon">◎</div><div class="label">수집 출처</div><div class="value" id="sourceCount">0</div><div class="hint">블로그·카페·웹후기</div></div>
+          <div class="metric"><div class="micon">◇</div><div class="label">주요 키워드</div><div class="value" id="keywordCount">…</div><div class="hint">반복 언급 기준</div></div>
+          <div class="metric"><div class="micon">◎</div><div class="label">수집 출처</div><div class="value" id="sourceCount">…</div><div class="hint">블로그·카페·웹후기</div></div>
         </div>
       </article>
 
       <article class="panel top10">
         <div class="panel-head"><div><div class="panel-title">인기 키워드 TOP 10</div><div class="panel-sub">사람들이 가장 많이 언급한 키워드</div></div><button class="link-btn" id="top10All">전체 보기</button></div>
-        <div class="rank-grid" id="rankGrid"></div>
+        <div class="rank-grid" id="rankGrid"><div class="loading-line">키워드 데이터를 불러오는 중…</div></div>
       </article>
     </div>
   </section>
@@ -193,7 +202,7 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:228px minmax(0
         <div><div class="panel-title">최근 후기</div><div class="panel-sub" id="postSubtitle">실제 사용자 의견을 최신순으로 확인해보세요</div></div>
         <button class="link-btn" id="clearFilter">전체 보기</button>
       </div>
-      <div class="review-grid" id="posts"></div>
+      <div class="review-grid" id="posts"><div class="loading-line">저장된 후기를 불러오는 중…</div></div>
     </article></section>
 
   <div class="footer-note">수집 가능한 공개 게시물 기준 · 실제 원문 URL 연결</div>
@@ -204,12 +213,23 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:228px minmax(0
 let catalog={},state={level:'초등',book:'교과서 개념잡기',data:null,keyword:null,global:null};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-async function jfetch(url,opt){const r=await fetch(url,opt);let j;try{j=await r.json()}catch{j={error:'서버 응답을 읽지 못했습니다.'}}if(!r.ok)throw new Error(j.error||`오류 ${r.status}`);return j}
+async function jfetch(url,opt={}){
+      const ctl=new AbortController();
+      const timer=setTimeout(()=>ctl.abort(),8000);
+      try{
+        const r=await fetch(url,{...opt,signal:ctl.signal});
+        let j;try{j=await r.json()}catch{j={error:'서버 응답을 읽지 못했습니다.'}}
+        if(!r.ok)throw new Error(j.error||`오류 ${r.status}`);
+        return j;
+      }catch(e){
+        if(e.name==='AbortError')throw new Error('데이터 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요.');
+        throw e;
+      }finally{clearTimeout(timer)}
+    }
 function showError(msg=''){const e=$('error');e.style.display=msg?'block':'none';e.textContent=msg}
-function busy(v){const b=$('refreshAllSide');if(b)b.disabled=v}
+function busy(v){const b=$('refreshAllSide');if(b){b.disabled=v;b.textContent=v?'업데이트 중…':'↻ 전체 데이터 업데이트'}}
 function renderTabs(){const box=$('tabs');box.innerHTML='';Object.keys(catalog).forEach(l=>{const b=document.createElement('button');b.textContent=l;b.className=l===state.level?'active':'';b.onclick=()=>{state.level=l;state.book=catalog[l][0];state.keyword=null;renderTabs();renderBooks();loadBook()};box.appendChild(b)})}
 function renderBooks(){const box=$('books');box.innerHTML='';(catalog[state.level]||[]).forEach(book=>{const d=document.createElement('div');d.className='book '+(book===state.book?'active':'');d.textContent=book;d.onclick=()=>{state.book=book;state.keyword=null;renderBooks();loadBook()};box.appendChild(d)})}
-async function loadStatus(){try{const s=await jfetch('/api/status');$('apiState').textContent=(s.naver.ok?'● 정상':'● 일부 오류')+(s.openai.ok?'':' · OpenAI 확인 필요');$('apiState').style.color=s.naver.ok?'#16a36f':'#d64a5f'}catch(e){$('apiState').textContent='● 확인 실패';$('apiState').style.color='#d64a5f'}}
 function keywordPositions(n){const pos=[[30,25],[50,17],[72,27],[80,52],[70,76],[48,82],[25,72],[18,48],[35,48],[65,50]];return pos.slice(0,n)}
 function relatedTerms(word){
  const map={
@@ -231,7 +251,7 @@ function relatedTerms(word){
  };
  return map[word]||['실제 후기 언급','반복 언급','사용 경험'];
 }
-function renderMind(a){
+function renderMind(a){const loading=$('keywordLoading');if(loading)loading.remove();
  const kws=(a?.keywords||[]).slice(0,8),nodes=$('nodes');nodes.innerHTML='';
  $('centerNode').innerHTML=esc(state.book).replace(/\s+/g,' ')+'<br><small style="font-size:11px;font-weight:800;opacity:.86">전체 보기</small>';
  if(!kws.length){nodes.innerHTML='<div style="position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);color:#8d9bb0;font-size:13px">키워드 데이터가 아직 없습니다.</div>';return}
@@ -253,7 +273,7 @@ function renderPosts(){
 }
 function renderData(d){
  state.data=d;$('bookTitle').textContent=state.book;$('mentions').textContent=(d.mentions||0).toLocaleString();$('positive').textContent=Number.isInteger(d.analysis?.positive)?d.analysis.positive+'%':'-';
- const kws=d.analysis?.keywords||[];$('keywordCount').textContent=kws.length;const srcs=new Set((d.posts||[]).map(p=>p.source).filter(Boolean));$('sourceCount').textContent=srcs.size;$('sideUpdated').textContent=d.lastUpdated?d.lastUpdated.replace('T',' ').slice(0,16):'-';
+ const kws=d.analysis?.keywords||[];$('keywordCount').textContent=kws.length;const srcs=new Set((d.posts||[]).map(p=>p.source).filter(Boolean));$('sourceCount').textContent=srcs.size;$('sideUpdated').textContent=d.lastUpdated?d.lastUpdated.replace('T',' ').slice(0,16):'-';$('topUpdated').textContent=d.lastUpdated?d.lastUpdated.replace('T',' ').slice(0,16):'-';
  renderMind(d.analysis);renderTop10(d.analysis);renderPosts()
 }
 async function loadBook(){showError('');try{renderData(await jfetch(`/api/book?level=${encodeURIComponent(state.level)}&book=${encodeURIComponent(state.book)}`))}catch(e){showError(e.message)}}
@@ -265,11 +285,11 @@ async function refreshBook(level,book){return jfetch(`/api/refresh?level=${encod
  }catch(e){}
 }
 
-$('refreshAll').onclick=async()=>{if(!confirm('전체 교재를 업데이트할까요? OpenAI 사용량이 발생할 수 있습니다.'))return;busy(true);showError('');const all=[];for(const [level,books]of Object.entries(catalog))for(const book of books)all.push([level,book]);$('progressWrap').style.display='block';let ok=0,fail=0;for(let i=0;i<all.length;i++){const[level,book]=all[i];$('progressText').textContent=`${level} · ${book} 업데이트 중`;$('progressCount').textContent=`${i+1} / ${all.length}`;$('progressBar').style.width=((i/all.length)*100)+'%';try{await refreshBook(level,book);ok++}catch(e){fail++}}$('progressBar').style.width='100%';$('progressText').textContent=`완료 · 성공 ${ok} / 실패 ${fail}`;await loadBook();await loadStatus();busy(false);if(fail)showError(`${fail}개 교재 업데이트가 실패했습니다.`)};
+$('refreshAll').onclick=async()=>{if(!confirm('전체 교재를 업데이트할까요? OpenAI 사용량이 발생할 수 있습니다.'))return;busy(true);showError('');const all=[];for(const [level,books]of Object.entries(catalog))for(const book of books)all.push([level,book]);$('progressWrap').style.display='block';let ok=0,fail=0;for(let i=0;i<all.length;i++){const[level,book]=all[i];$('progressText').textContent=`${level} · ${book} 업데이트 중`;$('progressCount').textContent=`${i+1} / ${all.length}`;$('progressBar').style.width=((i/all.length)*100)+'%';try{await refreshBook(level,book);ok++}catch(e){fail++}}$('progressBar').style.width='100%';$('progressText').textContent=`완료 · 성공 ${ok} / 실패 ${fail}`;await loadBook();busy(false);if(fail)showError(`${fail}개 교재 업데이트가 실패했습니다.`)};
 $('refreshAllSide').onclick=$('refreshAll').onclick;
 function clearKeyword(){state.keyword=null;renderMind(state.data?.analysis);renderPosts()}
 $('centerNode').onclick=clearKeyword;$('centerNodeTop').onclick=clearKeyword;$('top10All').onclick=clearKeyword;$('clearFilter').onclick=clearKeyword;
-(async()=>{catalog=await jfetch('/api/catalog');renderTabs();renderBooks();await loadStatus();await loadBook();loadGlobal()})();
+(async()=>{try{catalog=await jfetch('/api/catalog');renderTabs();renderBooks();await loadBook()}catch(e){showError(e.message)}})();
 </script>
 </body>
 </html>
