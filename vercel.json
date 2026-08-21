@@ -5,6 +5,9 @@
     },
     "api/refresh.js": {
       "maxDuration": 120
+    },
+    "api/analyze.js": {
+      "maxDuration": 300
     }
   },
   "crons": [
