@@ -221,7 +221,7 @@
         <div class="sent-method" id="sentMeta">후기별 감성 분류 결과를 바탕으로 계산합니다.</div>
       </div>
     </div></div></article>
-<article class="panel reviews" id="postCard"><div class="panel-head"><div><div class="ptitle">전체 후기</div><div class="psub" id="reviewSubtitle">20개씩 확인할 수 있습니다.</div><div class="negative-guide"><span class="negative-dot"></span> 부정 의견 표시</div></div></div><div class="review-list" id="posts"></div><div class="pagination" id="pagination"></div></article></main></div>
+<article class="panel reviews" id="postCard"><div class="panel-head"><div><div class="ptitle">전체 후기</div><div class="psub" id="reviewSubtitle">20개씩 확인할 수 있습니다.</div><div class="negative-guide"><span class="negative-dot"></span> 부정·아쉬움 검토 표시</div></div></div><div class="review-list" id="posts"></div><div class="pagination" id="pagination"></div></article></main></div>
 <script>
 let catalog={},state={level:'초등',book:'교과서 개념잡기',data:null,keyword:null,page:1,pageSize:20};
 const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -322,12 +322,19 @@ function renderSentiment(a){
 }
 
 function isNegativePost(p){
+ if(p?.sentimentLabel==='negative'||p?.needsReview===true)return true;
  const ev=(state.data?.analysis?.sentimentStats?.evidence||[]).find(x=>x.id===p.id);
- return ev?.label==='negative';
+ return ev?.label==='negative'||ev?.needsReview===true;
+}
+function reviewReason(p){
+ if(p?.reviewEvidence)return p.reviewEvidence;
+ if(p?.sentimentEvidence&&p?.sentimentLabel==='negative')return p.sentimentEvidence;
+ const ev=(state.data?.analysis?.sentimentStats?.evidence||[]).find(x=>x.id===p.id);
+ return ev?.reviewEvidence||ev?.evidence||'AI 분석에서 검토가 필요한 부정적 요소가 확인된 후기';
 }
 
 function renderReviews(){
- const posts=filteredPosts(),box=$('posts'),pages=Math.max(1,Math.ceil(posts.length/state.pageSize));if(state.page>pages)state.page=1;const start=(state.page-1)*state.pageSize,view=posts.slice(start,start+state.pageSize);box.innerHTML='';$('reviewSubtitle').textContent=state.keyword?`‘${state.keyword}’ 관련 후기 ${posts.length}건`:`전체 ${posts.length}건 · 20개씩 보기`;if(!view.length)box.innerHTML='<div class="loading">현재 조건에 해당하는 후기가 없습니다.</div>';view.forEach(p=>{const isNegative=isNegativePost(p);const a=document.createElement('a');a.className='review';a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';a.innerHTML=`<div class="source">${esc(p.source||'웹 후기')}</div><div><h4>${isNegative?'<span class="negative-dot" title="AI 분석에서 부정 의견으로 분류된 후기"></span>':''}<span>${esc(p.title)}${isNegative?'<span class="negative-label">부정</span>':''}</span></h4><p>${esc(p.description||'')}</p></div><div class="meta">${esc(p.author||'')}<br>${esc(p.postdate||'')}</div>`;box.appendChild(a)});const pg=$('pagination');pg.innerHTML='';for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pagebtn '+(i===state.page?'active':'');b.textContent=i;b.onclick=()=>{state.page=i;renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};pg.appendChild(b)}}
+ const posts=filteredPosts(),box=$('posts'),pages=Math.max(1,Math.ceil(posts.length/state.pageSize));if(state.page>pages)state.page=1;const start=(state.page-1)*state.pageSize,view=posts.slice(start,start+state.pageSize);box.innerHTML='';$('reviewSubtitle').textContent=state.keyword?`‘${state.keyword}’ 관련 후기 ${posts.length}건`:`전체 ${posts.length}건 · 20개씩 보기`;if(!view.length)box.innerHTML='<div class="loading">현재 조건에 해당하는 후기가 없습니다.</div>';view.forEach(p=>{const isNegative=isNegativePost(p);const a=document.createElement('a');a.className='review';a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';a.innerHTML=`<div class="source">${esc(p.source||'웹 후기')}</div><div><h4>${isNegative?`<span class="negative-dot" title="AI 검토 필요: ${esc(reviewReason(p))}"></span>`:''}<span>${esc(p.title)}${isNegative?'<span class="negative-label">검토</span>':''}</span></h4><p>${esc(p.description||'')}</p></div><div class="meta">${esc(p.author||'')}<br>${esc(p.postdate||'')}</div>`;box.appendChild(a)});const pg=$('pagination');pg.innerHTML='';for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pagebtn '+(i===state.page?'active':'');b.textContent=i;b.onclick=()=>{state.page=i;renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};pg.appendChild(b)}}
 function renderData(d){state.data=d;$('bookTitle').textContent=state.book;$('mentions').textContent=(d.mentions||0).toLocaleString();$('keywordCount').textContent=(d.analysis?.keywords||[]).length;$('heroMentions').textContent=(d.mentions||0).toLocaleString();$('heroKeywordCount').textContent=(d.analysis?.keywords||[]).length;const up=d.lastUpdated?d.lastUpdated.replace('T',' ').slice(0,16):'-';$('sideUpdated').textContent=up;$('topUpdated').textContent=up;$('summary').textContent=d.analysis?.summary||'아직 분석된 전체 후기 요약이 없습니다.';$('topics').innerHTML=(d.analysis?.topics||[]).map(t=>`<span class="topic">${esc(t)}</span>`).join('');renderMap(d.analysis);renderTop10(d.analysis);renderSentiment(d.analysis);renderReviews()}
 async function loadBook(){showError('');try{renderData(await jfetch(`/api/book?level=${encodeURIComponent(state.level)}&book=${encodeURIComponent(state.book)}`))}catch(e){showError(e.message)}}
 async function refreshBook(level,book){return jfetch(`/api/refresh?level=${encodeURIComponent(level)}&book=${encodeURIComponent(book)}`,{method:'POST'})}

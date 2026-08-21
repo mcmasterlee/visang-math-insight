@@ -1,0 +1,8 @@
+v27 (v21 계열)
+- 기존 positive/neutral/negative 감성 분석은 그대로 유지.
+- 게시글별 needsReview를 OpenAI가 별도로 판정.
+- 전체 감성이 긍정/중립이어도 실제 문장에 단점·아쉬움·난이도 부담·불편·부족함이 있으면 needsReview=true.
+- 임의 키워드 규칙이 아니라 OpenAI가 제공된 문장 근거로 판정.
+- 전체 후기에서는 negative 또는 needsReview=true인 게시글 제목 앞에 빨간 점 + '검토' 배지 표시.
+- 빨간 점 hover 시 AI가 선택한 직접 근거 표현 표시.
+- 배포 후 전체 데이터 업데이트를 해야 기존 게시글에도 needsReview 판정이 생성됨.
