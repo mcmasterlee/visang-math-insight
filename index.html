@@ -220,20 +220,24 @@
   color:#c45168!important;
 }
 </style>
-<style id="v30-sentiment-traceability">
-.sent-row2[data-sentiment]{cursor:pointer!important;transition:.15s ease}
-.sent-row2[data-sentiment]:hover{background:#f3f6fb!important}
-.sent-row2[data-sentiment].active{background:#eef1ff!important;box-shadow:inset 0 0 0 1px #dcdffa}
-.sent-row2[data-sentiment].disabled{opacity:.45;cursor:default!important}
+<style id="v31-user-opinion">
+.sent-row2.clickable{cursor:pointer!important;transition:.15s ease}
+.sent-row2.clickable:hover{background:#f4f7fb!important}
+.sent-row2.active{background:#eef1ff!important;box-shadow:inset 0 0 0 1px #dfe2fb}
 .donut.no-data{background:#edf1f6!important}
-.sentiment-dot{display:inline-block;width:9px;height:9px;flex:0 0 9px;margin-top:5px;border-radius:50%}
-.sentiment-dot.positive{background:#52c99a;box-shadow:0 0 0 3px rgba(82,201,154,.12)}
-.sentiment-dot.neutral{background:#a9b4c5;box-shadow:0 0 0 3px rgba(169,180,197,.12)}
-.sentiment-dot.negative{background:#ee7184;box-shadow:0 0 0 3px rgba(238,113,132,.12)}
-.sentiment-badge{display:inline-block;margin-left:5px;padding:2px 6px;border-radius:999px;font-size:8px;font-weight:900}
-.sentiment-badge.positive{background:#edf9f4;color:#31946d}
-.sentiment-badge.neutral{background:#f1f3f6;color:#77859b}
-.sentiment-badge.negative{background:#fff0f3;color:#c45168}
+
+.preference-dot,.improvement-dot{
+ display:inline-block;width:9px;height:9px;flex:0 0 9px;margin-top:5px;border-radius:50%
+}
+.preference-dot{background:#52c99a;box-shadow:0 0 0 3px rgba(82,201,154,.12)}
+.improvement-dot{background:#ee7184;box-shadow:0 0 0 3px rgba(238,113,132,.12)}
+
+.preference-badge,.improvement-badge{
+ display:inline-block;margin-left:6px;padding:2px 6px;border-radius:999px;font-size:8px;font-weight:900
+}
+.preference-badge{background:#edf9f4;color:#31946d}
+.improvement-badge{background:#fff0f3;color:#c45168}
+
 .review h4{align-items:flex-start!important}
 </style></head><body>
 <div class="app"><aside class="side"><div class="brand"><div class="mark"></div>비상 수학 인사이트</div><div class="brand-sub">사람들의 생각을 한눈에</div><div class="level-block"><div class="side-label">학교급</div><div class="tabs" id="tabs"></div></div><div class="side-label">교재 선택</div><div class="books" id="books"></div><div class="side-update"><small>최종 업데이트</small><b id="sideUpdated">-</b><button class="update-btn" id="refreshAllSide">↻ 전체 데이터 업데이트</button></div></aside>
@@ -250,25 +254,25 @@
       <div class="donut-wrap"><div class="donut" id="sentDonut" style="--pos:0%;--neu:0%"><div class="donut-label" id="positive">-</div></div></div>
       <div>
         <div class="sent-legend" id="sentLegend">
-          <div class="sent-row2" data-sentiment="positive" data-tip="긍정 판정 후기만 보기"><span class="sent-dot" style="background:#52c99a"></span><span>긍정</span><b id="posCount">-</b></div>
-          <div class="sent-row2" data-sentiment="neutral" data-tip="중립 판정 후기만 보기"><span class="sent-dot" style="background:#a9b4c5"></span><span>중립</span><b id="neuCount">-</b></div>
-          <div class="sent-row2" data-sentiment="negative" data-tip="부정 판정 후기만 보기"><span class="sent-dot" style="background:#ee7184"></span><span>부정</span><b id="negCount">-</b></div>
+          <div class="sent-row2" data-tip="높은 선호도: 실제 사용 후 만족·추천·학습 효과 등 뚜렷한 호평이 확인된 후기"><span class="sent-dot" style="background:#52c99a"></span><span>높은 선호도</span><b id="posCount">-</b></div>
+          <div class="sent-row2" data-tip="중립: 정보 공유나 사용 경험 중심으로 명확한 긍정·부정 평가가 없는 후기"><span class="sent-dot" style="background:#a9b4c5"></span><span>중립</span><b id="neuCount">-</b></div>
+          <div class="sent-row2" data-tip="개선 요구: 실제 사용 중 아쉬움이나 개선되면 좋을 점이 확인된 후기"><span class="sent-dot" style="background:#ee7184"></span><span>개선 요구</span><b id="negCount">-</b></div>
         </div>
         <div class="sent-method" id="sentMeta">후기별 감성 분류 결과를 바탕으로 계산합니다.</div>
       </div>
     </div></div></article>
 <article class="panel reviews" id="postCard"><div class="panel-head"><div><div class="ptitle">전체 후기</div><div class="psub" id="reviewSubtitle">20개씩 확인할 수 있습니다.</div>
       <div class="review-tools">
-        <button id="improvementToggle" class="improvement-toggle"><span class="negative-dot"></span><span>개선 의견만 보기</span><b id="improvementCount">0</b></button>
-        <span class="improvement-guide">빨간 점 = 교재 개선에 참고할 내용이 있는 후기</span>
+        <button id="improvementToggle" class="improvement-toggle"><span class="negative-dot"></span><span>개선 요구만 보기</span><b id="improvementCount">0</b></button>
+        <span class="improvement-guide">빨간 점 = 실제 사용자가 개선을 요청하거나 아쉬움을 남긴 후기</span>
       </div></div></div><div class="review-list" id="posts"></div><div class="pagination" id="pagination"></div></article></main></div>
 <script>
-let catalog={},state={level:'초등',book:'교과서 개념잡기',data:null,keyword:null,page:1,pageSize:20,improvementOnly:false,sentimentFilter:null};
+let catalog={},state={level:'초등',book:'교과서 개념잡기',data:null,keyword:null,page:1,pageSize:20,improvementOnly:false,userViewFilter:null};
 const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 async function jfetch(url,opt={}){const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),8000);try{const r=await fetch(url,{...opt,signal:ctl.signal});let j;try{j=await r.json()}catch{j={error:'서버 응답을 읽지 못했습니다.'}}if(!r.ok)throw new Error(j.error||`오류 ${r.status}`);return j}catch(e){if(e.name==='AbortError')throw new Error('데이터 응답이 지연되고 있습니다.');throw e}finally{clearTimeout(timer)}}
 function showError(msg=''){const e=$('error');e.style.display=msg?'block':'none';e.textContent=msg}
-function renderTabs(){const box=$('tabs');box.innerHTML='';Object.keys(catalog).forEach(l=>{const b=document.createElement('button');b.textContent=l;b.className=l===state.level?'active':'';b.onclick=()=>{state.level=l;state.book=catalog[l][0];state.keyword=null;state.improvementOnly=false;state.sentimentFilter=null;state.page=1;renderTabs();renderBooks();loadBook()};box.appendChild(b)})}
-function renderBooks(){const box=$('books');box.innerHTML='';(catalog[state.level]||[]).forEach(book=>{const d=document.createElement('div');d.className='book '+(book===state.book?'active':'');d.textContent=book;d.onclick=()=>{state.book=book;state.keyword=null;state.improvementOnly=false;state.sentimentFilter=null;state.page=1;renderBooks();loadBook()};box.appendChild(d)})}
+function renderTabs(){const box=$('tabs');box.innerHTML='';Object.keys(catalog).forEach(l=>{const b=document.createElement('button');b.textContent=l;b.className=l===state.level?'active':'';b.onclick=()=>{state.level=l;state.book=catalog[l][0];state.keyword=null;state.improvementOnly=false;state.userViewFilter=null;state.page=1;renderTabs();renderBooks();loadBook()};box.appendChild(b)})}
+function renderBooks(){const box=$('books');box.innerHTML='';(catalog[state.level]||[]).forEach(book=>{const d=document.createElement('div');d.className='book '+(book===state.book?'active':'');d.textContent=book;d.onclick=()=>{state.book=book;state.keyword=null;state.improvementOnly=false;state.userViewFilter=null;state.page=1;renderBooks();loadBook()};box.appendChild(d)})}
 function keywordSubtags(word){const m={'개념 설명':['설명이 자세해요','이해하기 쉬워요','개념 정리'],'유형 학습':['다양한 유형','유형별 연습','문제 적용'],'문제 구성':['구성이 알차요','단계별 문제','문항 구성'],'난이도':['적당해요','쉬워요','조금 어려워요'],'내신 대비':['학교 시험','중간·기말','시험 대비'],'반복 학습':['반복하기 좋아요','회독','꾸준한 학습'],'복습':['복습용','다시 풀기','정리하기'],'선행':['예습','미리 공부','선행 학습'],'숙제 활용':['학원 숙제','과제','숙제로 좋아요'],'기초 학습':['기본기','입문','기초 다지기'],'심화 학습':['고난도','상위권','심화 문제'],'문제량':['문항 수','연습량','분량'],'오답 관리':['틀린 문제','오답노트','다시 풀기'],'연산 훈련':['계산력','연산 연습','정확도'],'실전 대비':['기출 활용','실전 문제','시험 직전'],'해설 친절':['풀이 자세함','해설 이해','친절한 설명'],'학습 효과':['이해 잘됨','실력 향상','도움이 돼요'],'추천/만족':['추천해요','만족해요','재구매'],'단기간 완성':['빠른 학습','한 달 완성','짧은 기간'],'교재 편집':['보기 편해요','깔끔한 구성','가독성'],'분량 부담':['진도','분량','학습 부담'],'기출 활용':['시험 문제','기출문제','마무리']};return m[word]||['실제 후기 언급','반복 표현','사용 경험']}
 
 const COLOR_SETS=[
@@ -336,28 +340,35 @@ function filteredPosts(){
    posts=posts.filter(p=>ids.has(p.id));
  }
  if(state.improvementOnly)posts=posts.filter(isImprovementPost);
- if(state.sentimentFilter)posts=posts.filter(p=>sentimentOf(p)===state.sentimentFilter);
+ if(state.userViewFilter)posts=posts.filter(p=>userClassOf(p)===state.userViewFilter);
  return posts;
 }
 function renderSentiment(a){
  const st=a?.sentimentStats||{};
  const total=st.total||0, visible=state.data?.posts?.length||0;
- const pos=total?Math.round((st.positive||0)/total*100):null;
- const neu=total?Math.round((st.neutral||0)/total*100):null;
- const neg=total?Math.max(0,100-pos-neu):null;
- $('positive').textContent=pos===null?'-':pos+'%';
- $('sentDonut').style.setProperty('--pos',(pos||0)+'%');
- $('sentDonut').style.setProperty('--neu',(neu||0)+'%');
+ const high=total?Math.round((st.highPreference??st.positive??0)/total*100):null;
+ const neutral=total?Math.round((st.neutral||0)/total*100):null;
+ const improve=total?Math.max(0,100-high-neutral):null;
+
+ $('positive').textContent=high===null?'-':high+'%';
+ $('sentDonut').style.setProperty('--pos',(high||0)+'%');
+ $('sentDonut').style.setProperty('--neu',(neutral||0)+'%');
  $('sentDonut').classList.toggle('no-data',!total);
- $('posCount').textContent=total?`${st.positive||0}건 · ${pos}%`:'-';
- $('neuCount').textContent=total?`${st.neutral||0}건 · ${neu}%`:'-';
- $('negCount').textContent=total?`${st.negative||0}건 · ${neg}%`:'-';
+
+ $('posCount').textContent=total?`${st.highPreference??st.positive??0}건 · ${high}%`:'-';
+ $('neuCount').textContent=total?`${st.neutral||0}건 · ${neutral}%`:'-';
+ $('negCount').textContent=total?`${st.improvementRequest??st.negative??0}건 · ${improve}%`:'-';
+
  $('sentMeta').innerHTML=total
-   ? `AI 분류 <b>${total}건</b> / 현재 후기 <b>${visible}건</b><br>긍정·중립·부정을 클릭하면 해당 후기만 확인할 수 있습니다.`
-   : `현재 후기 ${visible}건 · 게시글별 감성 분석 결과가 없습니다.<br>전체 데이터 업데이트 후 분류합니다.`;
- document.querySelectorAll('.sent-row2[data-sentiment]').forEach(el=>{
-   el.classList.toggle('active',state.sentimentFilter===el.dataset.sentiment);
-   el.classList.toggle('disabled',!total);
+   ? `AI 분류 <b>${total}건</b> / 현재 후기 <b>${visible}건</b><br>높은 선호도와 개선 요구를 클릭하면 해당 후기만 바로 확인할 수 있습니다.`
+   : `현재 후기 ${visible}건 · 사용자 관점 분석 결과가 아직 없습니다.<br>전체 데이터 업데이트 후 분류합니다.`;
+
+ const rows=document.querySelectorAll('.sent-row2');
+ rows.forEach((el,i)=>{
+   const filter=i===0?'high_preference':i===2?'improvement_request':null;
+   el.dataset.userFilter=filter||'';
+   el.classList.toggle('clickable',Boolean(filter)&&Boolean(total));
+   el.classList.toggle('active',Boolean(filter)&&state.userViewFilter===filter);
  });
 }
 
@@ -383,23 +394,38 @@ function renderReviews(){
  if(state.page>pages)state.page=1;
  const start=(state.page-1)*state.pageSize,view=posts.slice(start,start+state.pageSize);
  box.innerHTML='';
- $('reviewSubtitle').textContent=state.sentimentFilter
-   ? `${sentimentKo(state.sentimentFilter)} 후기 ${posts.length}건 · 20개씩 보기`
+
+ $('reviewSubtitle').textContent=state.userViewFilter
+   ? `${userClassKo(state.userViewFilter)} 후기 ${posts.length}건 · 20개씩 보기`
    : state.keyword?`‘${state.keyword}’ 관련 후기 ${posts.length}건`
    : `전체 ${posts.length}건 · 20개씩 보기`;
+
  if(!view.length)box.innerHTML='<div class="loading">현재 조건에 해당하는 후기가 없습니다.</div>';
+
  view.forEach(p=>{
-   const isImprovement=isImprovementPost(p);
-   const sent=sentimentOf(p),sentText=sentimentKo(sent),sentEv=sentimentEvidenceOf(p);
-   const a=document.createElement('a');a.className='review';a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';
-   const sentDot=sent?`<span class="sentiment-dot ${sent}" title="${esc(sentText)}${sentEv?' · '+esc(sentEv):''}"></span>`:'';
-   const sentBadge=sent?`<span class="sentiment-badge ${sent}">${sentText}</span>`:'';
-   const improveBadge=isImprovement?`<span class="negative-label" title="${esc(improvementReason(p))}">${esc(improvementCategory(p))}</span>`:'';
-   a.innerHTML=`<div class="source">${esc(p.source||'웹 후기')}</div><div><h4>${sentDot}<span>${esc(p.title)} ${sentBadge} ${improveBadge}</span></h4><p>${esc(p.description||'')}</p></div><div class="meta">${esc(p.author||'')}<br>${esc(p.postdate||'')}</div>`;
+   const cls=userClassOf(p);
+   const a=document.createElement('a');
+   a.className='review';a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';
+
+   let marker='',badge='';
+   if(cls==='high_preference'){
+     marker=`<span class="preference-dot" title="높은 선호도 · ${esc(userClassEvidence(p))}"></span>`;
+     badge='<span class="preference-badge">높은 선호도</span>';
+   }else if(cls==='improvement_request'){
+     marker=`<span class="improvement-dot" title="${esc(improvementCategory(p))} · ${esc(userClassEvidence(p))}"></span>`;
+     badge=`<span class="improvement-badge">${esc(improvementCategory(p))}</span>`;
+   }
+
+   a.innerHTML=`<div class="source">${esc(p.source||'웹 후기')}</div><div><h4>${marker}<span>${esc(p.title)} ${badge}</span></h4><p>${esc(p.description||'')}</p></div><div class="meta">${esc(p.author||'')}<br>${esc(p.postdate||'')}</div>`;
    box.appendChild(a)
  });
+
  const pg=$('pagination');pg.innerHTML='';
- for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pagebtn '+(i===state.page?'active':'');b.textContent=i;b.onclick=()=>{state.page=i;renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};pg.appendChild(b)}
+ for(let i=1;i<=pages;i++){
+   const b=document.createElement('button');b.className='pagebtn '+(i===state.page?'active':'');b.textContent=i;
+   b.onclick=()=>{state.page=i;renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};
+   pg.appendChild(b)
+ }
 }
 function renderData(d){state.data=d;
  const improvementTotal=(d.posts||[]).filter(isImprovementPost).length;
@@ -408,8 +434,8 @@ function renderData(d){state.data=d;
 $('bookTitle').textContent=state.book;$('mentions').textContent=(d.mentions||0).toLocaleString();$('keywordCount').textContent=(d.analysis?.keywords||[]).length;$('heroMentions').textContent=(d.mentions||0).toLocaleString();$('heroKeywordCount').textContent=(d.analysis?.keywords||[]).length;const up=d.lastUpdated?d.lastUpdated.replace('T',' ').slice(0,16):'-';$('sideUpdated').textContent=up;$('topUpdated').textContent=up;$('summary').textContent=d.analysis?.summary||'아직 분석된 전체 후기 요약이 없습니다.';$('topics').innerHTML=(d.analysis?.topics||[]).map(t=>`<span class="topic">${esc(t)}</span>`).join('');renderMap(d.analysis);renderTop10(d.analysis);renderSentiment(d.analysis);renderReviews()}
 async function loadBook(){showError('');try{renderData(await jfetch(`/api/book?level=${encodeURIComponent(state.level)}&book=${encodeURIComponent(state.book)}`))}catch(e){showError(e.message)}}
 async function refreshBook(level,book){return jfetch(`/api/refresh?level=${encodeURIComponent(level)}&book=${encodeURIComponent(book)}`,{method:'POST'})}
-$('improvementToggle').onclick=()=>{state.improvementOnly=!state.improvementOnly;state.page=1;$('improvementToggle').classList.toggle('active',state.improvementOnly);renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};
-$('centerNode').onclick=()=>{state.keyword=null;state.sentimentFilter=null;state.improvementOnly=false;state.page=1;renderMap(state.data?.analysis);renderReviews()};
+$('improvementToggle').onclick=()=>{state.improvementOnly=!state.improvementOnly;state.userViewFilter=state.improvementOnly?'improvement_request':null;state.page=1;$('improvementToggle').classList.toggle('active',state.improvementOnly);renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};
+$('centerNode').onclick=()=>{state.keyword=null;state.userViewFilter=null;state.improvementOnly=false;state.page=1;renderMap(state.data?.analysis);renderReviews()};
 $('refreshAllSide').onclick=async()=>{if(!confirm('전체 교재 데이터를 업데이트할까요? OpenAI API 사용량이 발생할 수 있습니다.'))return;const btn=$('refreshAllSide');btn.disabled=true;btn.textContent='업데이트 중…';showError('');const all=[];for(const [level,books]of Object.entries(catalog))for(const book of books)all.push([level,book]);$('progressWrap').style.display='block';let ok=0,fail=0;for(let i=0;i<all.length;i++){const[level,book]=all[i];$('progressText').textContent=`${level} · ${book}`;$('progressCount').textContent=`${i+1}/${all.length}`;$('progressBar').style.width=(i/all.length*100)+'%';try{await refreshBook(level,book);ok++}catch(e){fail++}}$('progressBar').style.width='100%';$('progressText').textContent=`완료 · 성공 ${ok} / 실패 ${fail}`;await loadBook();btn.disabled=false;btn.textContent='↻ 전체 데이터 업데이트';if(fail)showError(`${fail}개 교재 업데이트 실패`)};
 
 function initTooltips(){
@@ -419,12 +445,15 @@ function initTooltips(){
  document.addEventListener('mouseout',e=>{if(e.target.closest('[data-tip]'))tip.classList.remove('show')})
 }
 initTooltips();
-document.querySelectorAll('.sent-row2[data-sentiment]').forEach(el=>{
+document.querySelectorAll('.sent-row2').forEach(el=>{
  el.onclick=()=>{
-   if(el.classList.contains('disabled'))return;
-   state.sentimentFilter=state.sentimentFilter===el.dataset.sentiment?null:el.dataset.sentiment;
-   state.improvementOnly=false;state.page=1;
-   renderSentiment(state.data?.analysis);renderReviews();
+   const filter=el.dataset.userFilter;
+   if(!filter)return;
+   state.userViewFilter=state.userViewFilter===filter?null:filter;
+   state.improvementOnly=false;
+   state.page=1;
+   renderSentiment(state.data?.analysis);
+   renderReviews();
    $('postCard').scrollIntoView({behavior:'smooth',block:'start'});
  };
 });
