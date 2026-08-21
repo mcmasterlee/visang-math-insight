@@ -150,7 +150,7 @@
   margin-top:0!important;
 }
 </style>
-</head><body>
+<style id="v42-usage-insight">.usage-insight-card{margin-bottom:18px;padding-bottom:18px}.usage-insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:10px 18px 14px}.usage-insight-group{border:1px solid #edf1f7;background:#fbfcff;border-radius:16px;padding:16px}.usage-insight-title{font-size:13px;font-weight:950;color:#162d5c}.usage-insight-desc{font-size:9px;color:#8f9bb0;margin:4px 0 12px}.usage-bars{display:grid;gap:8px}.usage-row{display:grid;grid-template-columns:96px minmax(80px,1fr) 42px 34px;align-items:center;gap:8px;width:100%;border:0;background:transparent;padding:5px 4px;border-radius:9px;text-align:left;cursor:pointer}.usage-row:hover,.usage-row.active{background:#f0f3ff}.usage-label{font-size:10px;font-weight:800;color:#52657f}.usage-track{height:8px;border-radius:99px;background:#e9eef6;overflow:hidden}.usage-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#59c79d,#6070ed)}.usage-row b{font-size:10px;color:#1d3767;text-align:right}.usage-row small{font-size:9px;color:#94a0b1;text-align:right}.usage-insight-note{padding:0 18px;font-size:9px;color:#8c99ae}@media(max-width:1100px){.usage-insight-grid{grid-template-columns:1fr}}</style></head><body>
 <div class="app"><aside class="side"><div class="brand"><div class="mark"></div>비상 수학 인사이트</div><div class="brand-sub">사람들의 생각을 한눈에</div><div class="level-block"><div class="side-label">학교급</div><div class="tabs" id="tabs"></div></div><div class="side-label">교재 선택</div><div class="books" id="books"></div><div class="side-update"><small>최종 업데이트</small><b id="sideUpdated">-</b><button class="update-btn" id="refreshAllSide">↻ 전체 데이터 업데이트</button></div></aside>
 <main class="main"><div class="topline"><div class="intro">비상교육 수학 교재에 대한 실제 사용자 의견을 분석했습니다.</div><div class="updated">최종 데이터 업데이트 <b id="topUpdated">-</b></div></div><div class="hero-row">
       <header class="hero"><div class="eyebrow">REAL USER REVIEW ANALYSIS</div><h1>비상교육 수학 교재,<br><em>사람들은 이렇게 생각하고 있어요</em></h1><p><strong id="bookTitle">교과서 개념잡기</strong> · 실제 후기에서 확인된 핵심 의견과 반복 키워드입니다.</p></header>
@@ -161,6 +161,19 @@
     </div><div id="error" class="error"></div><div id="progressWrap" class="progress-wrap"><div class="progress-top"><span id="progressText">업데이트 준비 중</span><span id="progressCount"></span></div><div class="progress"><i id="progressBar"></i></div></div>
 <article class="panel keyword-panel"><div class="panel-head"><div><div class="ptitle">키워드 맵</div><div class="psub">선택한 교재에서 실제로 반복된 키워드</div></div></div><div class="keyword-layout"><div class="mapstage"><button class="center" id="centerNode"><b id="centerBook"><span class="center-line">교과서 개념잡기</span></b><span class="center-action">전체 후기</span></button><div id="mapNodes"></div></div><aside class="top10-side"><div class="panel-head"><div><div class="ptitle">주요 키워드 상세</div><div class="psub">주요 키워드 전체 · 실제 후기 근거 기준</div></div></div><div class="top10-list" id="top10"></div></aside></div></article>
 <div class="mini-stats"><div class="mini"><span>총 후기 수</span><b id="mentions">…</b></div><div class="mini"><span>주요 키워드</span><b id="keywordCount">…</b></div></div>
+
+<article class="panel usage-insight-card" id="usageInsightCard">
+  <div class="panel-head"><div>
+    <div class="ptitle">사용자 후기 기반 학습·활용 인사이트</div>
+    <div class="psub">현재 수집된 후기의 제목과 설명에서 실제로 반복되는 활용 맥락과 관심 요소를 집계했습니다.</div>
+  </div></div>
+  <div class="usage-insight-grid">
+    <section class="usage-insight-group"><div class="usage-insight-title">교재 활용 맥락</div><div class="usage-insight-desc">어떤 학습 상황에서 교재가 언급되는지</div><div id="usageContextBars" class="usage-bars"></div></section>
+    <section class="usage-insight-group"><div class="usage-insight-title">사용자 관심 포인트</div><div class="usage-insight-desc">후기에서 반복적으로 확인되는 교재 요소</div><div id="usageInterestBars" class="usage-bars"></div></section>
+    <section class="usage-insight-group"><div class="usage-insight-title">후기 내용 유형</div><div class="usage-insight-desc">실사용 경험인지, 자료·정보 중심인지</div><div id="usageTypeBars" class="usage-bars"></div></section>
+  </div>
+  <div class="usage-insight-note" id="usageInsightNote">현재 후기 데이터를 기준으로 집계합니다. 막대를 클릭하면 해당 표현이 확인된 후기만 아래에서 볼 수 있습니다.</div>
+</article>
 <article class="panel insight"><div class="panel-head"><div><div class="ptitle">전체 후기 인사이트</div><div class="psub">전체 후기에서 반복적으로 확인된 내용</div></div></div><div class="insight-body"><div><div class="summary" id="summary">저장된 분석 데이터를 불러오는 중…</div><div class="topics" id="topics"></div></div><div class="sent-box">
       <div class="donut-wrap"><div class="donut" id="sentDonut" style="--pos:0%;--neu:0%"><div class="donut-label" id="positive">-</div></div></div>
       <div>
@@ -174,7 +187,7 @@
     </div></div></article>
 <article class="panel reviews" id="postCard"><div class="panel-head"><div><div class="ptitle">전체 후기</div><div class="psub" id="reviewSubtitle">20개씩 확인할 수 있습니다.</div></div></div><div class="review-list" id="posts"></div><div class="pagination" id="pagination"></div></article></main></div>
 <script>
-let catalog={},state={level:'초등',book:'교과서 개념잡기',data:null,keyword:null,page:1,pageSize:20};
+let catalog={},state={level:'초등',book:'교과서 개념잡기',data:null,keyword:null,page:1,pageSize:20,usageFilter:null};
 const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 async function jfetch(url,opt={}){const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),8000);try{const r=await fetch(url,{...opt,signal:ctl.signal});let j;try{j=await r.json()}catch{j={error:'서버 응답을 읽지 못했습니다.'}}if(!r.ok)throw new Error(j.error||`오류 ${r.status}`);return j}catch(e){if(e.name==='AbortError')throw new Error('데이터 응답이 지연되고 있습니다.');throw e}finally{clearTimeout(timer)}}
 function showError(msg=''){const e=$('error');e.style.display=msg?'block':'none';e.textContent=msg}
@@ -238,7 +251,44 @@ function renderMap(a){
   })
 }
 function renderTop10(a){const kws=(a?.keywords||[]),box=$('top10');box.innerHTML='';const max=Math.max(1,...kws.map(k=>k.count||0));if(!kws.length){box.innerHTML='<div class="loading">키워드 데이터가 없습니다.</div>';return}kws.forEach((k,i)=>{const r=document.createElement('div');r.className='rank';r.innerHTML=`<div class="rn">${i+1}</div><div><div class="rname">${esc(k.word)}</div><div class="rbar"><i style="width:${Math.max(8,k.count/max*100)}%"></i></div></div><div class="rcount">${k.count}</div>`;r.onclick=()=>{state.keyword=k.word;state.page=1;renderMap(a);renderReviews();$('postCard').scrollIntoView({behavior:'smooth'})};box.appendChild(r)})}
-function filteredPosts(){const posts=state.data?.posts||[];if(!state.keyword)return posts;const kw=(state.data?.analysis?.keywords||[]).find(k=>k.word===state.keyword);if(!kw)return[];const ids=new Set(kw.postIds||[]);return posts.filter(p=>ids.has(p.id))}
+
+const USAGE_RULES={
+  context:[
+    {key:'preview',label:'예습·선행',terms:['예습','선행','미리 공부','미리 학습','선행학습']},
+    {key:'review',label:'복습·보충',terms:['복습','보충','다시 풀','재학습','기초 다지','기초다지']},
+    {key:'vacation',label:'방학 학습',terms:['방학','여름방학','겨울방학','방학동안','방학 동안']},
+    {key:'test',label:'시험·평가 대비',terms:['시험','평가','내신','단원평가','중간','기말','평가대비']},
+    {key:'class',label:'수업·진도 활용',terms:['수업','진도','학원','공부방','교습소','숙제','과제']}
+  ],
+  interest:[
+    {key:'concept',label:'개념 설명',terms:['개념','설명','개념정리','개념 정리','이해']},
+    {key:'problem',label:'문제 구성',terms:['문제','문항','유형','문제구성','문제 구성']},
+    {key:'difficulty',label:'난이도',terms:['난이도','쉬운','쉽다','쉬워','어려운','어렵다','어려워','적당']},
+    {key:'answer',label:'정답·해설·자료',terms:['정답','답지','해설','정오표','pdf','자료','큐알','qr','부록']},
+    {key:'structure',label:'교과 연계·구성',terms:['교과서','진도','구성','단원','목차','연계']}
+  ],
+  type:[
+    {key:'experience',label:'실사용·후기',terms:['사용','써보','풀어보','풀었','공부해','후기','리뷰','선택한 이유','추천']},
+    {key:'resource',label:'자료·답지 정보',terms:['답지','정답','pdf','자료','정오표','다운로드','요청','파일']},
+    {key:'recommend',label:'추천·선택 이유',terms:['추천','선택','고른','골랐','선택한 이유','좋아서','만족']},
+    {key:'method',label:'학습법·활용',terms:['활용','공부법','학습법','진도','숙제','복습','예습','방학']},
+    {key:'info',label:'구매·교재 정보',terms:['가격','출간','구매','판매','교재 정보','신간','정가']}
+  ]
+};
+function usageText(p){return `${p?.title||''} ${p?.description||''}`.toLowerCase()}
+function usageMatch(p,rule){const t=usageText(p);return rule.terms.some(x=>t.includes(x.toLowerCase()))}
+function usageCounts(group){const posts=state.data?.posts||[];return USAGE_RULES[group].map(rule=>({rule,count:posts.filter(p=>usageMatch(p,rule)).length}))}
+function renderUsageBars(targetId,group){
+ const box=$(targetId);if(!box)return;
+ const rows=usageCounts(group),total=state.data?.posts?.length||0,max=Math.max(1,...rows.map(x=>x.count));
+ box.innerHTML=rows.map(({rule,count})=>{const pct=total?Math.round(count/total*100):0;const active=state.usageFilter?.group===group&&state.usageFilter?.key===rule.key;return `<button class="usage-row ${active?'active':''}" data-group="${group}" data-key="${rule.key}"><span class="usage-label">${rule.label}</span><span class="usage-track"><i style="width:${count?Math.max(6,(count/max)*100):0}%"></i></span><b>${count}건</b><small>${pct}%</small></button>`}).join('');
+ box.querySelectorAll('.usage-row').forEach(btn=>{btn.onclick=()=>{const group=btn.dataset.group,key=btn.dataset.key;state.usageFilter=(state.usageFilter?.group===group&&state.usageFilter?.key===key)?null:{group,key};state.keyword=null;state.page=1;renderUsageInsights();renderReviews();$('postCard')?.scrollIntoView({behavior:'smooth',block:'start'})}});
+}
+function renderUsageInsights(){renderUsageBars('usageContextBars','context');renderUsageBars('usageInterestBars','interest');renderUsageBars('usageTypeBars','type');const note=$('usageInsightNote'),total=state.data?.posts?.length||0;if(note)note.innerHTML=total?`<b>현재 후기 ${total}건 기준</b> · 막대를 클릭하면 해당 표현이 확인된 후기만 아래에서 볼 수 있습니다.`:'집계할 후기가 없습니다.'}
+function usageFilterLabel(){if(!state.usageFilter)return '';const rule=(USAGE_RULES[state.usageFilter.group]||[]).find(x=>x.key===state.usageFilter.key);return rule?.label||''}
+
+function filteredPosts(){let posts=state.data?.posts||[];if(state.keyword){const kw=(state.data?.analysis?.keywords||[]).find(k=>k.word===state.keyword);if(!kw)return[];const ids=new Set(kw.postIds||[]);posts=posts.filter(p=>ids.has(p.id))}if(state.usageFilter){const rule=(USAGE_RULES[state.usageFilter.group]||[]).find(x=>x.key===state.usageFilter.key);if(rule)posts=posts.filter(p=>usageMatch(p,rule))}return posts}
+
 function renderSentiment(a){
  const st=a?.sentimentStats;
  let pos=Number.isInteger(a?.positive)?a.positive:null;
@@ -271,8 +321,8 @@ function renderSentiment(a){
    $('sentMeta').textContent='OpenAI 분석 완료 후 후기별 높은 선호도·중립·개선 요구 분류 결과를 표시합니다.';
  }
 }
-function renderReviews(){const posts=filteredPosts(),box=$('posts'),pages=Math.max(1,Math.ceil(posts.length/state.pageSize));if(state.page>pages)state.page=1;const start=(state.page-1)*state.pageSize,view=posts.slice(start,start+state.pageSize);box.innerHTML='';$('reviewSubtitle').textContent=state.keyword?`‘${state.keyword}’ 관련 후기 ${posts.length}건`:`전체 ${posts.length}건 · 20개씩 보기`;if(!view.length)box.innerHTML='<div class="loading">현재 조건에 해당하는 후기가 없습니다.</div>';view.forEach(p=>{const a=document.createElement('a');a.className='review';a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';a.innerHTML=`<div class="source">${esc(p.source||'웹 후기')}</div><div><h4>${esc(p.title)}</h4><p>${esc(p.description||'')}</p></div><div class="meta">${esc(p.author||'')}<br>${esc(p.postdate||'')}</div>`;box.appendChild(a)});const pg=$('pagination');pg.innerHTML='';for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pagebtn '+(i===state.page?'active':'');b.textContent=i;b.onclick=()=>{state.page=i;renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};pg.appendChild(b)}}
-function renderData(d){state.data=d;$('bookTitle').textContent=state.book;$('mentions').textContent=(d.mentions||0).toLocaleString();$('keywordCount').textContent=(d.analysis?.keywords||[]).length;$('heroMentions').textContent=(d.mentions||0).toLocaleString();$('heroKeywordCount').textContent=(d.analysis?.keywords||[]).length;const up=d.lastUpdated?d.lastUpdated.replace('T',' ').slice(0,16):'-';$('sideUpdated').textContent=up;$('topUpdated').textContent=up;$('summary').textContent=d.analysis?.summary||'아직 분석된 전체 후기 요약이 없습니다.';$('topics').innerHTML=(d.analysis?.topics||[]).map(t=>`<span class="topic">${esc(t)}</span>`).join('');renderMap(d.analysis);renderTop10(d.analysis);renderSentiment(d.analysis);renderReviews()}
+function renderReviews(){const posts=filteredPosts(),box=$('posts'),pages=Math.max(1,Math.ceil(posts.length/state.pageSize));if(state.page>pages)state.page=1;const start=(state.page-1)*state.pageSize,view=posts.slice(start,start+state.pageSize);box.innerHTML='';$('reviewSubtitle').textContent=state.usageFilter?`‘${usageFilterLabel()}’ 관련 후기 ${posts.length}건 · 20개씩 보기`:state.keyword?`‘${state.keyword}’ 관련 후기 ${posts.length}건`:`전체 ${posts.length}건 · 20개씩 보기`;if(!view.length)box.innerHTML='<div class="loading">현재 조건에 해당하는 후기가 없습니다.</div>';view.forEach(p=>{const a=document.createElement('a');a.className='review';a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';a.innerHTML=`<div class="source">${esc(p.source||'웹 후기')}</div><div><h4>${esc(p.title)}</h4><p>${esc(p.description||'')}</p></div><div class="meta">${esc(p.author||'')}<br>${esc(p.postdate||'')}</div>`;box.appendChild(a)});const pg=$('pagination');pg.innerHTML='';for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pagebtn '+(i===state.page?'active':'');b.textContent=i;b.onclick=()=>{state.page=i;renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};pg.appendChild(b)}}
+function renderData(d){state.data=d;$('bookTitle').textContent=state.book;$('mentions').textContent=(d.mentions||0).toLocaleString();$('keywordCount').textContent=(d.analysis?.keywords||[]).length;$('heroMentions').textContent=(d.mentions||0).toLocaleString();$('heroKeywordCount').textContent=(d.analysis?.keywords||[]).length;const up=d.lastUpdated?d.lastUpdated.replace('T',' ').slice(0,16):'-';$('sideUpdated').textContent=up;$('topUpdated').textContent=up;$('summary').textContent=d.analysis?.summary||'아직 분석된 전체 후기 요약이 없습니다.';$('topics').innerHTML=(d.analysis?.topics||[]).map(t=>`<span class="topic">${esc(t)}</span>`).join('');renderMap(d.analysis);renderTop10(d.analysis);renderSentiment(d.analysis);renderUsageInsights();renderReviews()}
 async function loadBook(){showError('');try{renderData(await jfetch(`/api/book?level=${encodeURIComponent(state.level)}&book=${encodeURIComponent(state.book)}`))}catch(e){showError(e.message)}}
 async function refreshBook(level,book){return jfetch(`/api/refresh?level=${encodeURIComponent(level)}&book=${encodeURIComponent(book)}`,{method:'POST'})}
 $('centerNode').onclick=()=>{state.keyword=null;state.page=1;renderMap(state.data?.analysis);renderReviews()};
