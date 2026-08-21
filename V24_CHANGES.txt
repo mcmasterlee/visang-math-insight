@@ -1,0 +1,9 @@
+v24 (v21 기반)
+- 부정 후기 표시 로직 강화
+- 우선순위:
+  1) 새 업데이트에서 게시글에 저장된 sentimentLabel=negative
+  2) analysis.sentimentStats.evidence의 negative 분류
+  3) 기존 저장 데이터에는 보수적인 부정 표현 휴리스틱 사용
+- 새 전체 업데이트부터 각 게시글에 sentimentLabel / sentimentEvidence 저장
+- 부정 후기는 제목 앞 빨간 점 + '부정' 배지 + 아주 옅은 붉은 배경 표시
+- 전체 후기 영역에 빨간 점 의미 안내 추가
