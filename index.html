@@ -150,6 +150,43 @@
   margin-top:0!important;
 }
 </style>
+
+<style id="v23-keyword-negative-review">
+/* 주요 키워드 상세: 최대 12개를 모두 자연스럽게 표시 */
+.top10-list{
+  max-height:none!important;
+}
+.top10-side{
+  overflow:visible!important;
+}
+
+/* 부정 후기 표시 */
+.review h4{
+  display:flex;
+  align-items:flex-start;
+  gap:7px;
+}
+.negative-dot{
+  width:8px;
+  height:8px;
+  flex:0 0 8px;
+  margin-top:5px;
+  border-radius:50%;
+  background:#ee7184;
+  box-shadow:0 0 0 3px rgba(238,113,132,.12);
+}
+.negative-label{
+  display:inline-block;
+  margin-left:6px;
+  padding:2px 5px;
+  border-radius:999px;
+  background:#fff0f2;
+  color:#c45267;
+  font-size:8px;
+  font-weight:900;
+  vertical-align:1px;
+}
+</style>
 </head><body>
 <div class="app"><aside class="side"><div class="brand"><div class="mark"></div>비상 수학 인사이트</div><div class="brand-sub">사람들의 생각을 한눈에</div><div class="level-block"><div class="side-label">학교급</div><div class="tabs" id="tabs"></div></div><div class="side-label">교재 선택</div><div class="books" id="books"></div><div class="side-update"><small>최종 업데이트</small><b id="sideUpdated">-</b><button class="update-btn" id="refreshAllSide">↻ 전체 데이터 업데이트</button></div></aside>
 <main class="main"><div class="topline"><div class="intro">비상교육 수학 교재에 대한 실제 사용자 의견을 분석했습니다.</div><div class="updated">최종 데이터 업데이트 <b id="topUpdated">-</b></div></div><div class="hero-row">
@@ -159,7 +196,7 @@
         <div class="hero-stat"><span>주요 키워드</span><b id="heroKeywordCount">…</b></div>
       </div>
     </div><div id="error" class="error"></div><div id="progressWrap" class="progress-wrap"><div class="progress-top"><span id="progressText">업데이트 준비 중</span><span id="progressCount"></span></div><div class="progress"><i id="progressBar"></i></div></div>
-<article class="panel keyword-panel"><div class="panel-head"><div><div class="ptitle">키워드 맵</div><div class="psub">선택한 교재에서 실제로 반복된 키워드</div></div></div><div class="keyword-layout"><div class="mapstage"><button class="center" id="centerNode"><b id="centerBook"><span class="center-line">교과서 개념잡기</span></b><span class="center-action">전체 후기</span></button><div id="mapNodes"></div></div><aside class="top10-side"><div class="panel-head"><div><div class="ptitle">인기 키워드 TOP 10</div><div class="psub">실제 후기 근거 기준</div></div></div><div class="top10-list" id="top10"></div></aside></div></article>
+<article class="panel keyword-panel"><div class="panel-head"><div><div class="ptitle">키워드 맵</div><div class="psub">선택한 교재에서 실제로 반복된 키워드</div></div></div><div class="keyword-layout"><div class="mapstage"><button class="center" id="centerNode"><b id="centerBook"><span class="center-line">교과서 개념잡기</span></b><span class="center-action">전체 후기</span></button><div id="mapNodes"></div></div><aside class="top10-side"><div class="panel-head"><div><div class="ptitle">주요 키워드 상세</div><div class="psub">주요 키워드 전체 · 실제 후기 근거 기준</div></div></div><div class="top10-list" id="top10"></div></aside></div></article>
 <div class="mini-stats"><div class="mini"><span>총 후기 수</span><b id="mentions">…</b></div><div class="mini"><span>주요 키워드</span><b id="keywordCount">…</b></div></div>
 <article class="panel insight"><div class="panel-head"><div><div class="ptitle">전체 후기 인사이트</div><div class="psub">전체 후기에서 반복적으로 확인된 내용</div></div></div><div class="insight-body"><div><div class="summary" id="summary">저장된 분석 데이터를 불러오는 중…</div><div class="topics" id="topics"></div></div><div class="sent-box">
       <div class="donut-wrap"><div class="donut" id="sentDonut" style="--pos:0%;--neu:0%"><div class="donut-label" id="positive">-</div></div></div>
@@ -237,7 +274,7 @@ function renderMap(a){
     keywordSubtags(k.word).slice(0,3).forEach(t=>{const sp=document.createElement('span');sp.className=`chip ${c.chip}`;sp.textContent=t;chips.appendChild(sp)});box.appendChild(chips)
   })
 }
-function renderTop10(a){const kws=(a?.keywords||[]).slice(0,10),box=$('top10');box.innerHTML='';const max=Math.max(1,...kws.map(k=>k.count||0));if(!kws.length){box.innerHTML='<div class="loading">키워드 데이터가 없습니다.</div>';return}kws.forEach((k,i)=>{const r=document.createElement('div');r.className='rank';r.innerHTML=`<div class="rn">${i+1}</div><div><div class="rname">${esc(k.word)}</div><div class="rbar"><i style="width:${Math.max(8,k.count/max*100)}%"></i></div></div><div class="rcount">${k.count}</div>`;r.onclick=()=>{state.keyword=k.word;state.page=1;renderMap(a);renderReviews();$('postCard').scrollIntoView({behavior:'smooth'})};box.appendChild(r)})}
+function renderTop10(a){const kws=(a?.keywords||[]),box=$('top10');box.innerHTML='';const max=Math.max(1,...kws.map(k=>k.count||0));if(!kws.length){box.innerHTML='<div class="loading">주요 키워드 데이터가 없습니다.</div>';return}kws.forEach((k,i)=>{const r=document.createElement('div');r.className='rank';r.innerHTML=`<div class="rn">${i+1}</div><div><div class="rname">${esc(k.word)}</div><div class="rbar"><i style="width:${Math.max(8,k.count/max*100)}%"></i></div></div><div class="rcount">${k.count}</div>`;r.onclick=()=>{state.keyword=k.word;state.page=1;renderMap(a);renderReviews();$('postCard').scrollIntoView({behavior:'smooth'})};box.appendChild(r)})}
 function filteredPosts(){const posts=state.data?.posts||[];if(!state.keyword)return posts;const kw=(state.data?.analysis?.keywords||[]).find(k=>k.word===state.keyword);if(!kw)return[];const ids=new Set(kw.postIds||[]);return posts.filter(p=>ids.has(p.id))}
 function renderSentiment(a){
  const st=a?.sentimentStats;
@@ -271,7 +308,10 @@ function renderSentiment(a){
    $('sentMeta').textContent='OpenAI 분석 완료 후 후기별 긍정·중립·부정 분류 결과를 표시합니다.';
  }
 }
-function renderReviews(){const posts=filteredPosts(),box=$('posts'),pages=Math.max(1,Math.ceil(posts.length/state.pageSize));if(state.page>pages)state.page=1;const start=(state.page-1)*state.pageSize,view=posts.slice(start,start+state.pageSize);box.innerHTML='';$('reviewSubtitle').textContent=state.keyword?`‘${state.keyword}’ 관련 후기 ${posts.length}건`:`전체 ${posts.length}건 · 20개씩 보기`;if(!view.length)box.innerHTML='<div class="loading">현재 조건에 해당하는 후기가 없습니다.</div>';view.forEach(p=>{const a=document.createElement('a');a.className='review';a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';a.innerHTML=`<div class="source">${esc(p.source||'웹 후기')}</div><div><h4>${esc(p.title)}</h4><p>${esc(p.description||'')}</p></div><div class="meta">${esc(p.author||'')}<br>${esc(p.postdate||'')}</div>`;box.appendChild(a)});const pg=$('pagination');pg.innerHTML='';for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pagebtn '+(i===state.page?'active':'');b.textContent=i;b.onclick=()=>{state.page=i;renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};pg.appendChild(b)}}
+function renderReviews(){
+ const negIds=new Set((state.data?.analysis?.sentimentStats?.evidence||[]).filter(x=>x.label==='negative').map(x=>x.id));
+ const posts=filteredPosts(),box=$('posts'),pages=Math.max(1,Math.ceil(posts.length/state.pageSize));if(state.page>pages)state.page=1;const start=(state.page-1)*state.pageSize,view=posts.slice(start,start+state.pageSize);box.innerHTML='';$('reviewSubtitle').textContent=state.keyword?`‘${state.keyword}’ 관련 후기 ${posts.length}건`:`전체 ${posts.length}건 · 20개씩 보기`;if(!view.length)box.innerHTML='<div class="loading">현재 조건에 해당하는 후기가 없습니다.</div>';view.forEach(p=>{const a=document.createElement('a');a.className='review';a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';const isNegative=negIds.has(p.id);
+ a.innerHTML=`<div class="source">${esc(p.source||'웹 후기')}</div><div><h4>${isNegative?'<span class="negative-dot" title="AI 분석에서 부정 의견으로 분류된 후기"></span>':''}<span>${esc(p.title)}${isNegative?'<span class="negative-label">부정</span>':''}</span></h4><p>${esc(p.description||'')}</p></div><div class="meta">${esc(p.author||'')}<br>${esc(p.postdate||'')}</div>`;box.appendChild(a)});const pg=$('pagination');pg.innerHTML='';for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pagebtn '+(i===state.page?'active':'');b.textContent=i;b.onclick=()=>{state.page=i;renderReviews();$('postCard').scrollIntoView({behavior:'smooth',block:'start'})};pg.appendChild(b)}}
 function renderData(d){state.data=d;$('bookTitle').textContent=state.book;$('mentions').textContent=(d.mentions||0).toLocaleString();$('keywordCount').textContent=(d.analysis?.keywords||[]).length;$('heroMentions').textContent=(d.mentions||0).toLocaleString();$('heroKeywordCount').textContent=(d.analysis?.keywords||[]).length;const up=d.lastUpdated?d.lastUpdated.replace('T',' ').slice(0,16):'-';$('sideUpdated').textContent=up;$('topUpdated').textContent=up;$('summary').textContent=d.analysis?.summary||'아직 분석된 전체 후기 요약이 없습니다.';$('topics').innerHTML=(d.analysis?.topics||[]).map(t=>`<span class="topic">${esc(t)}</span>`).join('');renderMap(d.analysis);renderTop10(d.analysis);renderSentiment(d.analysis);renderReviews()}
 async function loadBook(){showError('');try{renderData(await jfetch(`/api/book?level=${encodeURIComponent(state.level)}&book=${encodeURIComponent(state.book)}`))}catch(e){showError(e.message)}}
 async function refreshBook(level,book){return jfetch(`/api/refresh?level=${encodeURIComponent(level)}&book=${encodeURIComponent(book)}`,{method:'POST'})}
