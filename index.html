@@ -109,6 +109,25 @@
   margin-top:28px!important;
 }
 </style>
+
+<style id="v19-position-spacing-fix">
+/* 우측 상단 통계 박스를 교재 설명 문장 라인에 맞춰 아래로 */
+.hero-row{
+  align-items:end!important;
+}
+.hero-stats{
+  align-self:end!important;
+  transform:translateY(22px);
+}
+
+/* 키워드맵 박스와 전체 후기 인사이트 박스 사이를 확실히 띄움 */
+.keyword-panel{
+  margin-bottom:38px!important;
+}
+.insight{
+  margin-top:0!important;
+}
+</style>
 </head><body>
 <div class="app"><aside class="side"><div class="brand"><div class="mark"></div>비상 수학 인사이트</div><div class="brand-sub">사람들의 생각을 한눈에</div><div class="level-block"><div class="side-label">학교급</div><div class="tabs" id="tabs"></div></div><div class="side-label">교재 선택</div><div class="books" id="books"></div><div class="side-update"><small>최종 업데이트</small><b id="sideUpdated">-</b><button class="update-btn" id="refreshAllSide">↻ 전체 데이터 업데이트</button></div></aside>
 <main class="main"><div class="topline"><div class="intro">비상교육 수학 교재에 대한 실제 사용자 의견을 분석했습니다.</div><div class="updated">최종 데이터 업데이트 <b id="topUpdated">-</b></div></div><div class="hero-row">
