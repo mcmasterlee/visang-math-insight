@@ -1,48 +1,9 @@
 {
   "functions": {
-    "api/cron.js": {
-      "maxDuration": 300
-    },
-    "api/refresh.js": {
-      "maxDuration": 120
-    },
-    "api/analyze.js": {
-      "maxDuration": 300
-    }
+    "api/cron.js": { "maxDuration": 300 },
+    "api/refresh.js": { "maxDuration": 120 }
   },
   "crons": [
-    {
-      "path": "/api/cron",
-      "schedule": "0 18 * * *"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, max-age=0"
-        }
-      ]
-    },
-    {
-      "source": "/index.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, max-age=0"
-        }
-      ]
-    },
-    {
-      "source": "/public/index.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, max-age=0"
-        }
-      ]
-    }
+    {"path":"/api/cron","schedule":"0 18 * * *"}
   ]
 }
